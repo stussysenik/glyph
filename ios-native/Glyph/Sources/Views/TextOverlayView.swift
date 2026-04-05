@@ -1,5 +1,7 @@
 import SwiftUI
 
+private typealias DS = GlyphDesignSystem
+
 /// A single draggable, resizable, rotatable text overlay on the canvas.
 struct TextOverlayView: View {
     let overlay: TextOverlay
@@ -26,7 +28,7 @@ struct TextOverlayView: View {
             .overlay {
                 if isSelected {
                     RoundedRectangle(cornerRadius: 4)
-                        .stroke(GlyphTheme.accent, lineWidth: 1.5)
+                        .stroke(DS.Color.accent, lineWidth: 1.5)
                         .padding(4)
                 }
             }

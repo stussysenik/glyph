@@ -18,7 +18,7 @@ struct TextOverlay: Identifiable {
         text: String = "Hello",
         fontFamily: String = "Playfair Display",
         fontSize: CGFloat = 64,
-        textColor: Color = .white,
+        textColor: Color = .black,
         alignment: TextAlignment = .center,
         letterSpacing: CGFloat = 0,
         position: CGSize = .zero,

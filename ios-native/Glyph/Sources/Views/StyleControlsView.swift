@@ -1,22 +1,24 @@
 import SwiftUI
 
+private typealias DS = GlyphDesignSystem
+
 /// Bottom sheet with styling controls for the selected overlay.
 struct StyleControlsView: View {
     @Environment(CanvasViewModel.self) private var canvas
 
     var body: some View {
         if let overlay = canvas.selectedOverlay {
-            VStack(spacing: 20) {
-                // Font Size
-                VStack(alignment: .leading, spacing: 8) {
+            VStack(spacing: DS.Spacing.xl) {
+                VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                     HStack {
-                        Text("Size")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(GlyphTheme.textSecondary)
+                        Text("SIZE")
+                            .font(DS.Typography.label)
+                            .tracking(1.5)
+                            .foregroundStyle(DS.Color.textTertiary)
                         Spacer()
                         Text("\(Int(overlay.fontSize))pt")
                             .font(.subheadline.monospacedDigit())
-                            .foregroundStyle(GlyphTheme.textSecondary)
+                            .foregroundStyle(DS.Color.textSecondary)
                     }
                     Slider(
                         value: Binding(
@@ -26,19 +28,19 @@ struct StyleControlsView: View {
                         in: 24...200,
                         step: 1
                     )
-                    .tint(GlyphTheme.accent)
+                    .tint(DS.Color.accent)
                 }
 
-                // Letter Spacing
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                     HStack {
-                        Text("Spacing")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(GlyphTheme.textSecondary)
+                        Text("SPACING")
+                            .font(DS.Typography.label)
+                            .tracking(1.5)
+                            .foregroundStyle(DS.Color.textTertiary)
                         Spacer()
                         Text(String(format: "%.1f", overlay.letterSpacing))
                             .font(.subheadline.monospacedDigit())
-                            .foregroundStyle(GlyphTheme.textSecondary)
+                            .foregroundStyle(DS.Color.textSecondary)
                     }
                     Slider(
                         value: Binding(
@@ -48,14 +50,14 @@ struct StyleControlsView: View {
                         in: -5...20,
                         step: 0.5
                     )
-                    .tint(GlyphTheme.accent)
+                    .tint(DS.Color.accent)
                 }
 
-                // Alignment
-                HStack(spacing: 12) {
-                    Text("Align")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(GlyphTheme.textSecondary)
+                HStack(spacing: DS.Spacing.md) {
+                    Text("ALIGN")
+                        .font(DS.Typography.label)
+                        .tracking(1.5)
+                        .foregroundStyle(DS.Color.textTertiary)
                     Spacer()
                     ForEach(
                         [(TextAlignment.leading, "text.alignleft"),
@@ -71,25 +73,25 @@ struct StyleControlsView: View {
                                 .font(.body)
                                 .foregroundStyle(
                                     overlay.alignment == alignment
-                                        ? GlyphTheme.accent
-                                        : GlyphTheme.textSecondary
+                                        ? DS.Color.accent
+                                        : DS.Color.textSecondary
                                 )
                                 .frame(width: 40, height: 36)
                                 .background(
                                     overlay.alignment == alignment
-                                        ? GlyphTheme.accent.opacity(0.15)
-                                        : Color.clear,
-                                    in: RoundedRectangle(cornerRadius: 8)
+                                        ? DS.Color.accent.opacity(0.15)
+                                        : SwiftUI.Color.clear,
+                                    in: RoundedRectangle(cornerRadius: DS.Radius.sm)
                                 )
                         }
                     }
                 }
 
-                // Color Grid
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Color")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(GlyphTheme.textSecondary)
+                VStack(alignment: .leading, spacing: DS.Spacing.sm) {
+                    Text("COLOR")
+                        .font(DS.Typography.label)
+                        .tracking(1.5)
+                        .foregroundStyle(DS.Color.textTertiary)
                     ColorGrid(
                         selectedColor: Binding(
                             get: { overlay.textColor },
@@ -98,7 +100,7 @@ struct StyleControlsView: View {
                     )
                 }
             }
-            .padding(20)
+            .padding(DS.Spacing.xl)
         }
     }
 }

@@ -22,6 +22,7 @@
 		CB9CD6E075D30D84CB14EFDE /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B99FEC37FBF960569B5726F /* CanvasView.swift */; };
 		E67EE10AF89CD525DFF76A02 /* StyleControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9331CDBFCF6E28FA74E9ECF8 /* StyleControlsView.swift */; };
 		E8F31606E6559C52FD645710 /* ExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B983BE3567B6E6EA5A5028 /* ExportSheet.swift */; };
+		F1A2B3C4D5E6F7081234ABCD /* GlyphDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718DEADBEEF /* GlyphDesignSystem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		4B2EC99BC6ACC7CDD2435967 /* FontPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontPickerSheet.swift; sourceTree = "<group>"; };
 		51747244A8400079B2DEDC05 /* TextOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOverlay.swift; sourceTree = "<group>"; };
 		578C03A4D3AF8A5F267BDB29 /* GlyphTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlyphTheme.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718DEADBEEF /* GlyphDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlyphDesignSystem.swift; sourceTree = "<group>"; };
 		7D63D8525429087E12F800F0 /* Glyph.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Glyph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91CE26D9CD8872F2B45665D9 /* TextOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOverlayView.swift; sourceTree = "<group>"; };
 		9331CDBFCF6E28FA74E9ECF8 /* StyleControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleControlsView.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				B5C9DA518F831BFC3522A0B7 /* GlyphApp.swift */,
+				A1B2C3D4E5F60718DEADBEEF /* GlyphDesignSystem.swift */,
 				578C03A4D3AF8A5F267BDB29 /* GlyphTheme.swift */,
 				51AFE74C3F6FB78F7082CBCC /* Models */,
 				32DFF96EF989FA60FA6D3F58 /* Services */,
@@ -182,6 +185,7 @@
 				99284F3FBF8D53E9025B2D5C /* FontLoader.swift in Sources */,
 				91AC1BB4532448A0ED75BD51 /* FontPickerSheet.swift in Sources */,
 				3F1E4138A2B562646FC7F59D /* GlyphApp.swift in Sources */,
+				F1A2B3C4D5E6F7081234ABCD /* GlyphDesignSystem.swift in Sources */,
 				87D217AA4B102EDFF313A325 /* GlyphTheme.swift in Sources */,
 				21D7ED14FE61BB73066A0EE0 /* InstagramSharer.swift in Sources */,
 				E67EE10AF89CD525DFF76A02 /* StyleControlsView.swift in Sources */,

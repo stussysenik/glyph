@@ -1,6 +1,8 @@
 import SwiftUI
 
-/// The main (and only) screen — dark canvas with text overlays and controls.
+private typealias DS = GlyphDesignSystem
+
+/// The main (and only) screen — light canvas with text overlays and controls.
 struct CanvasView: View {
     @Environment(CanvasViewModel.self) private var canvas
     @Environment(FontLibraryViewModel.self) private var fontLibrary
@@ -8,19 +10,16 @@ struct CanvasView: View {
     @State private var showStyleControls = false
     @State private var showFontPicker = false
     @State private var showExportSheet = false
-    @State private var editingText = ""
 
     var body: some View {
         ZStack {
-            // Background — tap to deselect
-            GlyphTheme.background
+            DS.Color.canvas
                 .ignoresSafeArea()
                 .onTapGesture {
                     canvas.deselectAll()
                     showStyleControls = false
                 }
 
-            // Overlays
             ForEach(canvas.overlays) { overlay in
                 TextOverlayView(
                     overlay: overlay,
@@ -28,18 +27,17 @@ struct CanvasView: View {
                 )
             }
 
-            // Top toolbar
             VStack {
                 HStack {
                     Button {
                         let font = fontLibrary.fonts.first?.familyName ?? "Playfair Display"
                         canvas.addOverlay(fontFamily: font)
-                        editingText = "Hello"
                         showStyleControls = true
                     } label: {
-                        Label("Add Text", systemImage: "plus")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(GlyphTheme.accent)
+                        Text("ADD TEXT")
+                            .font(DS.Typography.label)
+                            .tracking(1.5)
+                            .foregroundStyle(DS.Color.accent)
                     }
 
                     Spacer()
@@ -48,56 +46,37 @@ struct CanvasView: View {
                         Button {
                             showExportSheet = true
                         } label: {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.title3.weight(.semibold))
-                                .foregroundStyle(GlyphTheme.accent)
+                            Text("EXPORT")
+                                .font(DS.Typography.label)
+                                .tracking(1.5)
+                                .foregroundStyle(DS.Color.accent)
                         }
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
+                .padding(.horizontal, DS.Spacing.xl)
+                .padding(.top, DS.Spacing.sm)
 
                 Spacer()
 
-                // Bottom controls for selected overlay
                 if canvas.selectedOverlay != nil {
-                    HStack(spacing: 16) {
-                        Button {
+                    HStack(spacing: DS.Spacing.lg) {
+                        controlButton(icon: "textformat") {
                             showFontPicker = true
-                        } label: {
-                            Image(systemName: "textformat")
-                                .font(.title3)
-                                .foregroundStyle(.white)
-                                .frame(width: 44, height: 44)
-                                .background(GlyphTheme.surface, in: Circle())
                         }
 
-                        Button {
+                        controlButton(icon: "slider.horizontal.3") {
                             showStyleControls = true
-                        } label: {
-                            Image(systemName: "slider.horizontal.3")
-                                .font(.title3)
-                                .foregroundStyle(.white)
-                                .frame(width: 44, height: 44)
-                                .background(GlyphTheme.surface, in: Circle())
                         }
 
-                        Button {
+                        controlButton(icon: "trash", tint: DS.Color.error) {
                             canvas.removeSelected()
                             showStyleControls = false
-                        } label: {
-                            Image(systemName: "trash")
-                                .font(.title3)
-                                .foregroundStyle(GlyphTheme.error)
-                                .frame(width: 44, height: 44)
-                                .background(GlyphTheme.surface, in: Circle())
                         }
                     }
-                    .padding(.bottom, 20)
+                    .padding(.bottom, DS.Spacing.xl)
                 }
             }
 
-            // Inline text editor when editing
             if canvas.isEditing, let overlay = canvas.selectedOverlay {
                 VStack {
                     Spacer()
@@ -105,12 +84,12 @@ struct CanvasView: View {
                         get: { overlay.text },
                         set: { canvas.updateText($0) }
                     ))
-                    .font(.title2)
-                    .foregroundStyle(.white)
-                    .padding()
-                    .background(GlyphTheme.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .padding(.horizontal, 20)
+                    .font(DS.Typography.title)
+                    .foregroundStyle(DS.Color.textPrimary)
+                    .padding(DS.Spacing.lg)
+                    .background(DS.Color.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: DS.Radius.md))
+                    .padding(.horizontal, DS.Spacing.xl)
                     .padding(.bottom, 80)
                 }
                 .transition(.move(edge: .bottom))
@@ -124,7 +103,7 @@ struct CanvasView: View {
                     .environment(canvas)
                     .presentationDetents([.medium])
                     .presentationDragIndicator(.visible)
-                    .presentationBackground(GlyphTheme.surface)
+                    .presentationBackground(DS.Color.surface)
             }
         }
         .sheet(isPresented: $showFontPicker) {
@@ -133,14 +112,29 @@ struct CanvasView: View {
                 .environment(fontLibrary)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
-                .presentationBackground(GlyphTheme.surface)
+                .presentationBackground(DS.Color.surface)
         }
         .sheet(isPresented: $showExportSheet) {
             ExportSheet()
                 .environment(canvas)
                 .presentationDetents([.height(280)])
                 .presentationDragIndicator(.visible)
-                .presentationBackground(GlyphTheme.surface)
+                .presentationBackground(DS.Color.surface)
+        }
+    }
+
+    private func controlButton(
+        icon: String,
+        tint: SwiftUI.Color = DS.Color.textPrimary,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(tint)
+                .frame(width: 44, height: 44)
+                .background(DS.Color.canvas, in: Circle())
+                .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 4)
         }
     }
 }

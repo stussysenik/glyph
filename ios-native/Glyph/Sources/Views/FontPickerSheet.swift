@@ -1,6 +1,8 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+private typealias DS = GlyphDesignSystem
+
 /// Bottom sheet for browsing and importing fonts.
 struct FontPickerSheet: View {
     @Environment(CanvasViewModel.self) private var canvas
@@ -13,14 +15,12 @@ struct FontPickerSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                // Built-in section
                 Section("Built-in") {
                     ForEach(fontLibrary.bundledFonts) { entry in
                         fontRow(entry)
                     }
                 }
 
-                // Custom fonts section
                 if !fontLibrary.customFonts.isEmpty {
                     Section("Your Fonts") {
                         ForEach(fontLibrary.customFonts) { entry in
@@ -37,19 +37,29 @@ struct FontPickerSheet: View {
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
-            .background(GlyphTheme.surface)
+            .background(DS.Color.surface)
             .navigationTitle("Fonts")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Import") {
+                    Button {
                         showImporter = true
+                    } label: {
+                        Text("IMPORT")
+                            .font(DS.Typography.label)
+                            .tracking(1.5)
+                            .foregroundStyle(DS.Color.accent)
                     }
-                    .foregroundStyle(GlyphTheme.accent)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
-                        .foregroundStyle(GlyphTheme.accent)
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("DONE")
+                            .font(DS.Typography.label)
+                            .tracking(1.5)
+                            .foregroundStyle(DS.Color.accent)
+                    }
                 }
             }
             .fileImporter(
@@ -94,18 +104,18 @@ struct FontPickerSheet: View {
                      ? canvas.selectedOverlay!.text
                      : entry.displayName)
                     .font(.custom(entry.familyName, size: 20))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(DS.Color.textPrimary)
                     .lineLimit(1)
 
                 Spacer()
 
                 if canvas.selectedOverlay?.fontFamily == entry.familyName {
                     Image(systemName: "checkmark")
-                        .foregroundStyle(GlyphTheme.accent)
+                        .foregroundStyle(DS.Color.accent)
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, DS.Spacing.xs)
         }
-        .listRowBackground(GlyphTheme.surfaceLight)
+        .listRowBackground(DS.Color.canvas)
     }
 }

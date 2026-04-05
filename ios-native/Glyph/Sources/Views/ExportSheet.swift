@@ -1,5 +1,7 @@
 import SwiftUI
 
+private typealias DS = GlyphDesignSystem
+
 /// Bottom sheet with export actions: Instagram, Photos, Clipboard.
 struct ExportSheet: View {
     @Environment(CanvasViewModel.self) private var canvas
@@ -10,61 +12,67 @@ struct ExportSheet: View {
     @State private var showInstagramAlert = false
 
     var body: some View {
-        VStack(spacing: 16) {
-            Text("Export")
-                .font(.headline)
-                .foregroundStyle(.white)
-                .padding(.top, 4)
+        VStack(spacing: DS.Spacing.lg) {
+            Text("EXPORT")
+                .font(DS.Typography.label)
+                .tracking(1.5)
+                .foregroundStyle(DS.Color.textTertiary)
+                .padding(.top, DS.Spacing.xs)
 
-            // Instagram Stories — primary action
             Button {
                 Task { await exportToInstagram() }
             } label: {
                 Label("Share to Instagram Stories", systemImage: "paperplane.fill")
                     .font(.body.weight(.semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(DS.Color.textPrimary)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
-                    .background(GlyphTheme.accent, in: RoundedRectangle(cornerRadius: 12))
+                    .background(DS.Color.accent, in: RoundedRectangle(cornerRadius: DS.Radius.md))
             }
             .disabled(isExporting)
 
-            // Save to Photos
             Button {
                 Task { await saveToPhotos() }
             } label: {
                 Label("Save to Photos", systemImage: "photo.on.rectangle")
                     .font(.body.weight(.medium))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(DS.Color.textPrimary)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
-                    .background(GlyphTheme.surfaceLight, in: RoundedRectangle(cornerRadius: 12))
+                    .background(DS.Color.canvas, in: RoundedRectangle(cornerRadius: DS.Radius.md))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DS.Radius.md)
+                            .stroke(DS.Color.border, lineWidth: 1)
+                    )
             }
             .disabled(isExporting)
 
-            // Copy to Clipboard
             Button {
                 copyToClipboard()
             } label: {
                 Label("Copy Image", systemImage: "doc.on.doc")
                     .font(.body.weight(.medium))
-                    .foregroundStyle(GlyphTheme.textSecondary)
+                    .foregroundStyle(DS.Color.textSecondary)
                     .frame(maxWidth: .infinity)
                     .frame(height: 50)
-                    .background(GlyphTheme.surfaceLight, in: RoundedRectangle(cornerRadius: 12))
+                    .background(DS.Color.canvas, in: RoundedRectangle(cornerRadius: DS.Radius.md))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DS.Radius.md)
+                            .stroke(DS.Color.border, lineWidth: 1)
+                    )
             }
             .disabled(isExporting)
         }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
+        .padding(.horizontal, DS.Spacing.xl)
+        .padding(.bottom, DS.Spacing.xl)
         .overlay {
             if let message = toastMessage {
                 VStack {
                     Text(message)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
+                        .font(DS.Typography.caption)
+                        .foregroundStyle(DS.Color.textPrimary)
+                        .padding(.horizontal, DS.Spacing.lg)
+                        .padding(.vertical, DS.Spacing.md)
                         .background(.ultraThinMaterial, in: Capsule())
                     Spacer()
                 }
@@ -87,10 +95,7 @@ struct ExportSheet: View {
         }
     }
 
-    // MARK: - Export Actions
-
     private func renderImage() -> UIImage? {
-        // Use a 1080x1920 canvas (Stories resolution)
         let canvasSize = CGSize(width: 1080, height: 1920)
         return ExportEngine.renderOverlays(canvas.overlays, canvasSize: canvasSize)
     }

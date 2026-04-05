@@ -10,7 +10,6 @@ struct GlyphApp: App {
             CanvasView()
                 .environment(canvasVM)
                 .environment(fontLibraryVM)
-                .preferredColorScheme(.dark)
         }
     }
 }
