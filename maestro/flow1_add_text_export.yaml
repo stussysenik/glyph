@@ -1,0 +1,6 @@
+appId: com.glyphapp.glyph
+---
+- launchApp:
+    clearState: true
+- tapOn: "ADD TEXT"
+- assertVisible: "Type something"

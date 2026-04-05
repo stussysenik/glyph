@@ -32,6 +32,20 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         DEVELOPMENT_TEAM: Q7M42X7722
 
+  GlyphTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Tests/GlyphTests
+        createIntermediateGroups: true
+    dependencies:
+      - target: Glyph
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.glyphapp.glyph.tests
+        SWIFT_VERSION: "6.0"
+
 schemes:
   Glyph:
     build:
@@ -41,3 +55,5 @@ schemes:
       config: Debug
     test:
       config: Debug
+      targets:
+        - GlyphTests

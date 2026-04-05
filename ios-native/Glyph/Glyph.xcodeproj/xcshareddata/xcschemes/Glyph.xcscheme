@@ -39,6 +39,17 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "169AD0A9E8C7538D9EBAE4DD"
+               BuildableName = "GlyphTests.xctest"
+               BlueprintName = "GlyphTests"
+               ReferencedContainer = "container:Glyph.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>
