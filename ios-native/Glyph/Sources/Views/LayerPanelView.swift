@@ -82,6 +82,7 @@ private struct LayerRowView: View {
     var onTap: () -> Void
 
     @Environment(CanvasViewModel.self) private var vm
+    @Environment(HapticsService.self) private var haptics
 
     var body: some View {
         HStack(spacing: DS.Spacing.md) {
@@ -109,7 +110,7 @@ private struct LayerRowView: View {
 
             Spacer()
 
-            Button { vm.toggleLock(id: layer.id) } label: {
+            Button { vm.toggleLock(id: layer.id); haptics.lockToggle() } label: {
                 Image(systemName: layer.isLocked ? "lock.fill" : "lock.open")
                     .font(.system(size: 16))
                     .foregroundStyle(layer.isLocked ? DS.Color.accent : DS.Color.textTertiary)

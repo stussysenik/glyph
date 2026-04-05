@@ -6,6 +6,7 @@ struct CanvasView: View {
     @Environment(CanvasViewModel.self) private var vm
     @Environment(FontLibraryViewModel.self) private var fontLibrary
     @Environment(SettingsViewModel.self) private var settings
+    @Environment(HapticsService.self) private var haptics
 
     @State private var showStyleControls = false
     @State private var showFontPicker = false
@@ -37,6 +38,7 @@ struct CanvasView: View {
         .sheet(isPresented: $showLayerPanel) {
             LayerPanelView()
                 .environment(vm)
+                .environment(haptics)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
                 .presentationBackground(DS.Color.surface)
@@ -61,6 +63,7 @@ struct CanvasView: View {
         .sheet(isPresented: $showExportSheet) {
             ExportSheet()
                 .environment(vm)
+                .environment(haptics)
                 .presentationDetents([.height(280)])
                 .presentationDragIndicator(.visible)
                 .presentationBackground(DS.Color.surface)
@@ -159,8 +162,8 @@ struct CanvasView: View {
                     ImageOverlayView(
                         layer: imageLayer,
                         isSelected: vm.selectedLayerID == layer.id,
-                        onSelect: { vm.selectLayer(id: layer.id) },
-                        onLongPress: { vm.enterMultiSelect(startingWith: layer.id) },
+                        onSelect: { vm.selectLayer(id: layer.id); haptics.selectionChanged() },
+                        onLongPress: { vm.enterMultiSelect(startingWith: layer.id); haptics.selectionChanged() },
                         onPositionChange: { vm.updatePosition(id: layer.id, position: $0) },
                         onScaleChange: { vm.updateScale(id: layer.id, scale: $0) },
                         onRotationChange: { vm.updateRotation(id: layer.id, rotation: $0) }
@@ -169,10 +172,11 @@ struct CanvasView: View {
                     TextOverlayView(
                         layer: textLayer,
                         isSelected: vm.selectedLayerID == layer.id,
-                        onSelect: { vm.selectLayer(id: layer.id) },
+                        onSelect: { vm.selectLayer(id: layer.id); haptics.selectionChanged() },
                         onEdit: {
                             vm.selectLayer(id: layer.id)
                             vm.isEditing = true
+                            haptics.selectionChanged()
                         },
                         onPositionChange: { vm.updatePosition(id: layer.id, position: $0) },
                         onScaleChange: { vm.updateScale(id: layer.id, scale: $0) },
@@ -219,6 +223,9 @@ struct CanvasView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: vm.selectedLayerID)
         .animation(.easeInOut(duration: 0.2), value: vm.isEditing)
+        .onAppear {
+            vm.showGuides = settings.showGridByDefault
+        }
     }
 
     // MARK: - Bottom Controls
@@ -234,6 +241,7 @@ struct CanvasView: View {
                 controlButton(icon: "trash", tint: DS.Color.error) {
                     vm.removeSelectedLayers()
                     showStyleControls = false
+                    haptics.delete()
                 }
             }
             .padding(.vertical, DS.Spacing.lg)

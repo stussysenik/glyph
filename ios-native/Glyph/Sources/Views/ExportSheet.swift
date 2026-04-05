@@ -5,6 +5,7 @@ private typealias DS = GlyphDesignSystem
 /// Bottom sheet with export actions: Instagram, Photos, Clipboard.
 struct ExportSheet: View {
     @Environment(CanvasViewModel.self) private var canvas
+    @Environment(HapticsService.self) private var haptics
     @Environment(\.dismiss) private var dismiss
 
     @State private var isExporting = false
@@ -116,7 +117,7 @@ struct ExportSheet: View {
 
         let success = await InstagramSharer.shareSticker(image)
         if success {
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            haptics.exportSuccess()
             dismiss()
         } else {
             showToast("Sharing failed")
@@ -133,7 +134,7 @@ struct ExportSheet: View {
         }
 
         _ = await InstagramSharer.saveToPhotos(image)
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        haptics.exportSuccess()
         showToast("Saved to Photos!")
     }
 
@@ -144,7 +145,7 @@ struct ExportSheet: View {
         }
 
         InstagramSharer.copyToClipboard(image)
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        haptics.exportSuccess()
         showToast("Copied!")
     }
 
