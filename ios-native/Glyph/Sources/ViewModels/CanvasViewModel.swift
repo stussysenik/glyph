@@ -6,6 +6,12 @@ final class CanvasViewModel {
 
     // MARK: - Canvas state
 
+    /// Canvas dimensions — set from GeometryReader in CanvasView.
+    var canvasSize: CGSize = .zero
+
+    /// Snap threshold in points — synced from SettingsViewModel.
+    var snapThreshold: Double = 8.0
+
     /// Optional full-bleed background image
     var background: CanvasBackground?
 
@@ -127,6 +133,7 @@ final class CanvasViewModel {
             multiSelectedIDs.removeAll()
             isMultiSelectActive = false
         }
+        clearActiveGuides()
     }
 
     func enterMultiSelect(startingWith id: UUID) {
@@ -173,10 +180,27 @@ final class CanvasViewModel {
     // MARK: - Layer transform mutators (both types)
 
     func updatePosition(id: UUID, position: CGSize) {
-        if var layer = layers.first(where: { $0.id == id }) {
+        guard var layer = layers.first(where: { $0.id == id }) else { return }
+
+        if canvasSize == .zero {
             layer.position = position
             replaceLayer(layer)
+            return
         }
+
+        let layerSize = boundingSize(for: layer)
+        let others = otherLayerGeometries(excluding: id)
+        let (snapped, guides) = AlignmentEngine.snapPosition(
+            position,
+            layerSize: layerSize,
+            otherLayers: others,
+            canvasSize: canvasSize,
+            threshold: CGFloat(snapThreshold)
+        )
+
+        layer.position = snapped
+        replaceLayer(layer)
+        updateActiveGuides(guides)
     }
 
     func updateScale(id: UUID, scale: CGFloat) {
@@ -255,6 +279,25 @@ final class CanvasViewModel {
     }
 
     // MARK: - Private helpers
+
+    /// Approximate bounding size for snap calculations.
+    private func boundingSize(for layer: any Layer) -> CGSize {
+        if let text = layer as? TextLayer {
+            let estimatedWidth = text.fontSize * CGFloat(max(text.text.count, 3)) * 0.6
+            return CGSize(width: min(estimatedWidth, 300), height: text.fontSize * 1.4)
+        } else if let img = layer as? ImageLayer {
+            let baseWidth: CGFloat = 200
+            return CGSize(width: baseWidth, height: baseWidth / img.aspectRatio)
+        }
+        return CGSize(width: 100, height: 40)
+    }
+
+    /// Build LayerGeometry array for all visible layers except the given ID.
+    private func otherLayerGeometries(excluding id: UUID) -> [LayerGeometry] {
+        layers.filter { $0.id != id && $0.isVisible }.map { layer in
+            LayerGeometry(position: layer.position, size: boundingSize(for: layer))
+        }
+    }
 
     private func nextZIndex() -> Int {
         (layers.map(\.zIndex).max() ?? -1) + 1

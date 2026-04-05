@@ -54,6 +54,25 @@ enum ExportEngine {
         renderLayers(layers, background: background, canvasSize: canvasSize)?.pngData()
     }
 
+    /// Render all layers to Data in the specified format.
+    static func renderToData(
+        _ layers: [any Layer],
+        background: CanvasBackground?,
+        canvasSize: CGSize,
+        format: String,
+        quality: CGFloat = 1.0
+    ) -> Data? {
+        guard let image = renderLayers(layers, background: background, canvasSize: canvasSize) else {
+            return nil
+        }
+        switch format {
+        case "jpeg":
+            return image.jpegData(compressionQuality: quality)
+        default:
+            return image.pngData()
+        }
+    }
+
     // MARK: - Private drawing
 
     private static func drawTextLayer(_ layer: TextLayer, in ctx: CGContext, canvasSize: CGSize) {

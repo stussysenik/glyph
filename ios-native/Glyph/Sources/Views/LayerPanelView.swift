@@ -116,6 +116,7 @@ private struct LayerRowView: View {
                     .foregroundStyle(layer.isLocked ? DS.Color.accent : DS.Color.textTertiary)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(layer.isLocked ? "Unlock layer" : "Lock layer")
 
             Button { vm.toggleVisibility(id: layer.id) } label: {
                 Image(systemName: layer.isVisible ? "eye" : "eye.slash")
@@ -123,6 +124,7 @@ private struct LayerRowView: View {
                     .foregroundStyle(layer.isVisible ? DS.Color.textSecondary : DS.Color.textTertiary)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(layer.isVisible ? "Hide layer" : "Show layer")
         }
         .padding(.vertical, DS.Spacing.xs)
         .contentShape(Rectangle())

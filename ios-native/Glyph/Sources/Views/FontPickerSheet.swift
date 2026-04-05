@@ -7,6 +7,7 @@ private typealias DS = GlyphDesignSystem
 struct FontPickerSheet: View {
     @Environment(CanvasViewModel.self) private var canvas
     @Environment(FontLibraryViewModel.self) private var fontLibrary
+    @Environment(HapticsService.self) private var haptics
     @Environment(\.dismiss) private var dismiss
 
     @State private var showImporter = false
@@ -50,6 +51,7 @@ struct FontPickerSheet: View {
                             .tracking(1.5)
                             .foregroundStyle(DS.Color.accent)
                     }
+                    .accessibilityLabel("Import custom font")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -99,13 +101,12 @@ struct FontPickerSheet: View {
             if let id = canvas.selectedLayerID {
                 canvas.updateFont(id: id, fontFamily: entry.familyName)
             }
-            UISelectionFeedbackGenerator().selectionChanged()
+            haptics.selectionChanged()
             dismiss()
         } label: {
             HStack {
-                Text(canvas.selectedTextLayer?.text.isEmpty == false
-                     ? canvas.selectedTextLayer!.text
-                     : entry.displayName)
+                let previewText = canvas.selectedTextLayer?.text ?? ""
+                Text(previewText.isEmpty ? entry.displayName : previewText)
                     .font(.custom(entry.familyName, size: 20))
                     .foregroundStyle(DS.Color.textPrimary)
                     .lineLimit(1)

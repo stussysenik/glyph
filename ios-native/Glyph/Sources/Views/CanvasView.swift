@@ -47,6 +47,7 @@ struct CanvasView: View {
             if vm.selectedTextLayer != nil {
                 StyleControlsView()
                     .environment(vm)
+                    .environment(haptics)
                     .presentationDetents([.medium])
                     .presentationDragIndicator(.visible)
                     .presentationBackground(DS.Color.surface)
@@ -56,6 +57,7 @@ struct CanvasView: View {
             FontPickerSheet()
                 .environment(vm)
                 .environment(fontLibrary)
+                .environment(haptics)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
                 .presentationBackground(DS.Color.surface)
@@ -64,6 +66,7 @@ struct CanvasView: View {
             ExportSheet()
                 .environment(vm)
                 .environment(haptics)
+                .environment(settings)
                 .presentationDetents([.height(280)])
                 .presentationDragIndicator(.visible)
                 .presentationBackground(DS.Color.surface)
@@ -90,12 +93,14 @@ struct CanvasView: View {
                     .tracking(1.5)
                     .foregroundStyle(DS.Color.textSecondary)
             }
+            .accessibilityLabel("Set background image")
 
             Button { showImageOverlayPicker = true } label: {
                 Image(systemName: "photo.on.rectangle")
                     .font(.body)
                     .foregroundStyle(DS.Color.textSecondary)
             }
+            .accessibilityLabel("Add image layer")
 
             Spacer()
 
@@ -109,24 +114,28 @@ struct CanvasView: View {
                     .tracking(1.5)
                     .foregroundStyle(DS.Color.accent)
             }
+            .accessibilityLabel("Add text layer")
 
             Button { vm.showGuides.toggle() } label: {
                 Image(systemName: vm.showGuides ? "grid.circle.fill" : "grid.circle")
                     .font(.body)
                     .foregroundStyle(vm.showGuides ? DS.Color.accent : DS.Color.textSecondary)
             }
+            .accessibilityLabel(vm.showGuides ? "Hide alignment grid" : "Show alignment grid")
 
             Button { showLayerPanel = true } label: {
                 Image(systemName: "square.3.layers.3d")
                     .font(.body)
                     .foregroundStyle(DS.Color.textSecondary)
             }
+            .accessibilityLabel("Open layer panel")
 
             Button { showSettings = true } label: {
                 Image(systemName: "gearshape")
                     .font(.body)
                     .foregroundStyle(DS.Color.textSecondary)
             }
+            .accessibilityLabel("Open settings")
 
             if !vm.layers.isEmpty {
                 Button { showExportSheet = true } label: {
@@ -135,6 +144,7 @@ struct CanvasView: View {
                         .tracking(1.5)
                         .foregroundStyle(DS.Color.accent)
                 }
+                .accessibilityLabel("Export canvas")
             }
         }
         .padding(.horizontal, DS.Spacing.xl)
@@ -223,8 +233,19 @@ struct CanvasView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: vm.selectedLayerID)
         .animation(.easeInOut(duration: 0.2), value: vm.isEditing)
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear { vm.canvasSize = geo.size }
+                    .onChange(of: geo.size) { _, new in vm.canvasSize = new }
+            }
+        )
+        .onChange(of: vm.activeGuides.count) { old, new in
+            if new > old { haptics.snapToGuide() }
+        }
         .onAppear {
             vm.showGuides = settings.showGridByDefault
+            vm.snapThreshold = settings.snapThreshold
         }
     }
 
@@ -235,10 +256,10 @@ struct CanvasView: View {
         if vm.selectedLayerID != nil {
             HStack(spacing: DS.Spacing.lg) {
                 if vm.selectedTextLayer != nil {
-                    controlButton(icon: "textformat") { showFontPicker = true }
-                    controlButton(icon: "slider.horizontal.3") { showStyleControls = true }
+                    controlButton(icon: "textformat", label: "Choose font") { showFontPicker = true }
+                    controlButton(icon: "slider.horizontal.3", label: "Style controls") { showStyleControls = true }
                 }
-                controlButton(icon: "trash", tint: DS.Color.error) {
+                controlButton(icon: "trash", label: "Delete selected layer", tint: DS.Color.error) {
                     vm.removeSelectedLayers()
                     showStyleControls = false
                     haptics.delete()
@@ -250,6 +271,7 @@ struct CanvasView: View {
 
     private func controlButton(
         icon: String,
+        label: String,
         tint: SwiftUI.Color = DS.Color.textPrimary,
         action: @escaping () -> Void
     ) -> some View {
@@ -261,5 +283,6 @@ struct CanvasView: View {
                 .background(DS.Color.canvas, in: Circle())
                 .shadow(color: .black.opacity(0.10), radius: 8, x: 0, y: 4)
         }
+        .accessibilityLabel(label)
     }
 }

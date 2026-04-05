@@ -33,7 +33,7 @@
 		99284F3FBF8D53E9025B2D5C /* FontLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D3793B0B1EC4F09915A496 /* FontLoader.swift */; };
 		9F9FDDB21923F4C30CFAD742 /* PresetCodableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF32F4842DCD3808B2FEA0BB /* PresetCodableTests.swift */; };
 		AC063BC4A8E47C256B8BEC1A /* FontLibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78CD946FBB2DEDA9166E34E /* FontLibraryViewModel.swift */; };
-		B132FFB98428E9A2FBF134A7 /* TextOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51747244A8400079B2DEDC05 /* TextOverlay.swift */; };
+		B132FFB98428E9A2FBF134A7 /* SnapIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51747244A8400079B2DEDC05 /* SnapIntegrationTests.swift */; };
 		CA2A4103A6E2EC70EE1D7D7E /* ExportEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9456D868A458AACA75E939E6 /* ExportEngine.swift */; };
 		CB9CD6E075D30D84CB14EFDE /* CanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B99FEC37FBF960569B5726F /* CanvasView.swift */; };
 		CC80A0DDD861A24815FE4B91 /* CanvasBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96A1D890694A476B5E866B8C /* CanvasBackground.swift */; };
@@ -69,7 +69,7 @@
 		3B99FEC37FBF960569B5726F /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		4379A45D4F0F22797B8774E3 /* CanvasLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasLayer.swift; sourceTree = "<group>"; };
 		4B2EC99BC6ACC7CDD2435967 /* FontPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontPickerSheet.swift; sourceTree = "<group>"; };
-		51747244A8400079B2DEDC05 /* TextOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOverlay.swift; sourceTree = "<group>"; };
+		51747244A8400079B2DEDC05 /* SnapIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapIntegrationTests.swift; sourceTree = "<group>"; };
 		56D18D9D7328875F419B38D9 /* StylePreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StylePreset.swift; sourceTree = "<group>"; };
 		5E91BE95D32B3DC6F12FD899 /* BackgroundImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundImageView.swift; sourceTree = "<group>"; };
 		750A3B4D87496E4F02EA7419 /* LayerOrderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerOrderTests.swift; sourceTree = "<group>"; };
@@ -149,7 +149,6 @@
 				253F2553FBDC957B8DDC6E40 /* FontEntry.swift */,
 				2470E84972269F823B2F6059 /* Guide.swift */,
 				56D18D9D7328875F419B38D9 /* StylePreset.swift */,
-				51747244A8400079B2DEDC05 /* TextOverlay.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -217,6 +216,7 @@
 				DAF8A96C7F7DEBB903035F57 /* ExportEngineTests.swift */,
 				750A3B4D87496E4F02EA7419 /* LayerOrderTests.swift */,
 				EF32F4842DCD3808B2FEA0BB /* PresetCodableTests.swift */,
+				51747244A8400079B2DEDC05 /* SnapIntegrationTests.swift */,
 			);
 			path = GlyphTests;
 			sourceTree = "<group>";
@@ -332,7 +332,6 @@
 				7FAF953A10E2AE73E3F62342 /* SettingsViewModel.swift in Sources */,
 				E67EE10AF89CD525DFF76A02 /* StyleControlsView.swift in Sources */,
 				664105F1F1DD8EDD02BD013A /* StylePreset.swift in Sources */,
-				B132FFB98428E9A2FBF134A7 /* TextOverlay.swift in Sources */,
 				4E937DDFE267BFFB2D2ADEE6 /* TextOverlayView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -345,6 +344,7 @@
 				CE33E70FFE02C24FF34265BA /* ExportEngineTests.swift in Sources */,
 				3FDD3F738A69054631A83B6A /* LayerOrderTests.swift in Sources */,
 				9F9FDDB21923F4C30CFAD742 /* PresetCodableTests.swift in Sources */,
+				B132FFB98428E9A2FBF134A7 /* SnapIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

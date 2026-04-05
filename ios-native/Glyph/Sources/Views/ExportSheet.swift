@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 private typealias DS = GlyphDesignSystem
 
@@ -6,6 +7,7 @@ private typealias DS = GlyphDesignSystem
 struct ExportSheet: View {
     @Environment(CanvasViewModel.self) private var canvas
     @Environment(HapticsService.self) private var haptics
+    @Environment(SettingsViewModel.self) private var settings
     @Environment(\.dismiss) private var dismiss
 
     @State private var isExporting = false
@@ -31,6 +33,7 @@ struct ExportSheet: View {
                     .background(DS.Color.accent, in: RoundedRectangle(cornerRadius: DS.Radius.md))
             }
             .disabled(isExporting)
+            .accessibilityLabel("Share to Instagram Stories")
 
             Button {
                 Task { await saveToPhotos() }
@@ -47,6 +50,7 @@ struct ExportSheet: View {
                     )
             }
             .disabled(isExporting)
+            .accessibilityLabel("Save to photo library")
 
             Button {
                 copyToClipboard()
@@ -63,6 +67,7 @@ struct ExportSheet: View {
                     )
             }
             .disabled(isExporting)
+            .accessibilityLabel("Copy image to clipboard")
         }
         .padding(.horizontal, DS.Spacing.xl)
         .padding(.bottom, DS.Spacing.xl)
@@ -139,12 +144,28 @@ struct ExportSheet: View {
     }
 
     private func copyToClipboard() {
-        guard let image = renderImage() else {
-            showToast("Export failed")
-            return
+        let canvasSize = CGSize(width: 1080, height: 1920)
+
+        if settings.exportFormat == "jpeg" {
+            guard let data = ExportEngine.renderToData(
+                canvas.layers,
+                background: canvas.background,
+                canvasSize: canvasSize,
+                format: "jpeg",
+                quality: settings.exportQuality
+            ) else {
+                showToast("Export failed")
+                return
+            }
+            UIPasteboard.general.setData(data, forPasteboardType: "public.jpeg")
+        } else {
+            guard let image = renderImage() else {
+                showToast("Export failed")
+                return
+            }
+            UIPasteboard.general.image = image
         }
 
-        InstagramSharer.copyToClipboard(image)
         haptics.exportSuccess()
         showToast("Copied!")
     }

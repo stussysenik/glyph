@@ -6,6 +6,7 @@ private typealias DS = GlyphDesignSystem
 struct StyleControlsView: View {
     @Environment(CanvasViewModel.self) private var canvas
     @Environment(PresetStore.self) private var presetStore
+    @Environment(HapticsService.self) private var haptics
 
     @State private var showPresets = false
 
@@ -32,6 +33,7 @@ struct StyleControlsView: View {
                         step: 1
                     )
                     .tint(DS.Color.accent)
+                    .accessibilityLabel("Font size")
                 }
 
                 VStack(alignment: .leading, spacing: DS.Spacing.sm) {
@@ -54,6 +56,7 @@ struct StyleControlsView: View {
                         step: 0.5
                     )
                     .tint(DS.Color.accent)
+                    .accessibilityLabel("Letter spacing")
                 }
 
                 HStack(spacing: DS.Spacing.md) {
@@ -63,14 +66,14 @@ struct StyleControlsView: View {
                         .foregroundStyle(DS.Color.textTertiary)
                     Spacer()
                     ForEach(
-                        [(TextAlignment.leading, "text.alignleft"),
-                         (.center, "text.aligncenter"),
-                         (.trailing, "text.alignright")],
+                        [(TextAlignment.leading, "text.alignleft", "Align left"),
+                         (.center, "text.aligncenter", "Align center"),
+                         (.trailing, "text.alignright", "Align right")],
                         id: \.0.hashValue
-                    ) { alignment, icon in
+                    ) { alignment, icon, label in
                         Button {
                             canvas.updateAlignment(id: overlay.id, alignment: alignment)
-                            UISelectionFeedbackGenerator().selectionChanged()
+                            haptics.selectionChanged()
                         } label: {
                             Image(systemName: icon)
                                 .font(.body)
@@ -87,6 +90,7 @@ struct StyleControlsView: View {
                                     in: RoundedRectangle(cornerRadius: DS.Radius.sm)
                                 )
                         }
+                        .accessibilityLabel(label)
                     }
                 }
 
@@ -117,6 +121,7 @@ struct StyleControlsView: View {
                         .padding(.vertical, DS.Spacing.md)
                         .background(DS.Color.accentSubtle, in: RoundedRectangle(cornerRadius: DS.Radius.md))
                 }
+                .accessibilityLabel("Open style presets")
                 .sheet(isPresented: $showPresets) {
                     PresetSheetView()
                         .environment(canvas)

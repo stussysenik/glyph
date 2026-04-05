@@ -115,4 +115,48 @@ struct ExportEngineTests {
         let magic = [UInt8](data.prefix(4))
         #expect(magic == [0x89, 0x50, 0x4E, 0x47], "Output must be valid PNG data")
     }
+
+    // MARK: - renderToData format tests
+
+    @Test("renderToData with PNG format returns valid PNG data")
+    func pngFormatMagicBytes() {
+        let canvasSize = CGSize(width: 100, height: 100)
+        guard let data = ExportEngine.renderToData([], background: nil, canvasSize: canvasSize, format: "png") else {
+            Issue.record("renderToData returned nil for PNG")
+            return
+        }
+        // PNG magic bytes: 0x89 0x50 0x4E 0x47
+        let bytes = [UInt8](data.prefix(4))
+        #expect(bytes == [0x89, 0x50, 0x4E, 0x47])
+    }
+
+    @Test("renderToData with JPEG format returns valid JPEG data")
+    func jpegFormatMagicBytes() {
+        let canvasSize = CGSize(width: 100, height: 100)
+        // JPEG needs opaque image — use a background
+        var layer = TextLayer()
+        layer.text = "Test"
+        guard let data = ExportEngine.renderToData([layer], background: nil, canvasSize: canvasSize, format: "jpeg", quality: 0.8) else {
+            Issue.record("renderToData returned nil for JPEG")
+            return
+        }
+        // JPEG magic bytes: 0xFF 0xD8
+        let bytes = [UInt8](data.prefix(2))
+        #expect(bytes == [0xFF, 0xD8])
+    }
+
+    @Test("JPEG quality 0.5 produces smaller data than 1.0")
+    func jpegQualityAffectsSize() {
+        let canvasSize = CGSize(width: 200, height: 200)
+        var layer = TextLayer()
+        layer.text = "Quality Test"
+        layer.fontSize = 40
+
+        guard let lowQ = ExportEngine.renderToData([layer], background: nil, canvasSize: canvasSize, format: "jpeg", quality: 0.5),
+              let highQ = ExportEngine.renderToData([layer], background: nil, canvasSize: canvasSize, format: "jpeg", quality: 1.0) else {
+            Issue.record("renderToData returned nil")
+            return
+        }
+        #expect(lowQ.count < highQ.count)
+    }
 }
