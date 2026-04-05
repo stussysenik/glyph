@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA11BB22CC33DD44EE55FF60 /* CanvasLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF61 /* CanvasLayer.swift */; };
+		AA11BB22CC33DD44EE55FF62 /* CanvasBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF63 /* CanvasBackground.swift */; };
 		21D7ED14FE61BB73066A0EE0 /* InstagramSharer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60EBC2EC7318CE3777CF022 /* InstagramSharer.swift */; };
 		3F1E4138A2B562646FC7F59D /* GlyphApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DA518F831BFC3522A0B7 /* GlyphApp.swift */; };
 		4E937DDFE267BFFB2D2ADEE6 /* TextOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CE26D9CD8872F2B45665D9 /* TextOverlayView.swift */; };
@@ -26,6 +28,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AA11BB22CC33DD44EE55FF61 /* CanvasLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasLayer.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF63 /* CanvasBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasBackground.swift; sourceTree = "<group>"; };
 		1A09D3483ECF87EE18F37B1E /* ComponentCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentCatalog.swift; sourceTree = "<group>"; };
 		23BA4BF48242787E0969B421 /* ColorGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorGrid.swift; sourceTree = "<group>"; };
 		253F2553FBDC957B8DDC6E40 /* FontEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontEntry.swift; sourceTree = "<group>"; };
@@ -80,6 +84,8 @@
 		51AFE74C3F6FB78F7082CBCC /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				AA11BB22CC33DD44EE55FF63 /* CanvasBackground.swift */,
+				AA11BB22CC33DD44EE55FF61 /* CanvasLayer.swift */,
 				253F2553FBDC957B8DDC6E40 /* FontEntry.swift */,
 				51747244A8400079B2DEDC05 /* TextOverlay.swift */,
 			);
@@ -176,6 +182,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA11BB22CC33DD44EE55FF62 /* CanvasBackground.swift in Sources */,
+				AA11BB22CC33DD44EE55FF60 /* CanvasLayer.swift in Sources */,
 				CB9CD6E075D30D84CB14EFDE /* CanvasView.swift in Sources */,
 				8FA5B6ABEBCA31937FC2E959 /* CanvasViewModel.swift in Sources */,
 				51C8A53F05AED171DEDF8262 /* ColorGrid.swift in Sources */,

@@ -1,103 +1,232 @@
 import SwiftUI
+import Observation
 
-/// Owns the canvas state: all text overlays, selection, and editing mode.
 @Observable
 final class CanvasViewModel {
-    var overlays: [TextOverlay] = []
-    var selectedOverlayID: UUID?
+
+    // MARK: - Canvas state
+
+    /// Optional full-bleed background image
+    var background: CanvasBackground?
+
+    /// All canvas overlays in display order (ascending zIndex)
+    var layers: [any Layer] = []
+
+    /// ID of the single-selected layer (nil = nothing selected)
+    var selectedLayerID: UUID?
+
+    /// IDs active during multi-select mode
+    var multiSelectedIDs: Set<UUID> = []
+
+    /// Whether we are in multi-select mode
+    var isMultiSelectActive: Bool = false
+
+    /// Whether the selected text layer is being inline-edited
     var isEditing: Bool = false
 
-    /// The currently selected overlay, if any.
-    var selectedOverlay: TextOverlay? {
-        guard let id = selectedOverlayID else { return nil }
-        return overlays.first { $0.id == id }
+    // MARK: - Background
+
+    func setBackground(_ image: UIImage) {
+        background = CanvasBackground(image: image)
     }
 
-    /// Index of the selected overlay for mutation.
-    private var selectedIndex: Int? {
-        guard let id = selectedOverlayID else { return nil }
-        return overlays.firstIndex { $0.id == id }
+    func clearBackground() {
+        background = nil
     }
 
-    // MARK: - Actions
+    func updateBackgroundScale(_ scale: CGFloat) {
+        background?.scale = max(1.0, min(scale, 5.0))
+    }
 
-    /// Add a new text overlay at center. Returns the new overlay's ID.
-    @discardableResult
-    func addOverlay(fontFamily: String = "Playfair Display") -> UUID {
-        let overlay = TextOverlay(fontFamily: fontFamily)
-        overlays.append(overlay)
-        selectedOverlayID = overlay.id
+    func updateBackgroundOffset(_ offset: CGSize) {
+        background?.offset = offset
+    }
+
+    // MARK: - Layer CRUD
+
+    func addTextLayer(fontFamily: String = "Playfair Display") {
+        var layer = TextLayer()
+        layer.zIndex = nextZIndex()
+        layer.name = "Text \(layers.count + 1)"
+        layer.fontFamily = fontFamily
+        layers.append(layer)
+        selectedLayerID = layer.id
         isEditing = true
-        return overlay.id
     }
 
-    func selectOverlay(id: UUID?) {
-        selectedOverlayID = id
-        if id == nil { isEditing = false }
+    func addImageLayer(_ image: UIImage) {
+        var layer = ImageLayer(image: image)
+        layer.zIndex = nextZIndex()
+        layer.name = "Image \(layers.count + 1)"
+        layers.append(layer)
+        selectedLayerID = layer.id
     }
 
-    func deselectAll() {
-        selectedOverlayID = nil
-        isEditing = false
+    func removeLayer(id: UUID) {
+        layers.removeAll { $0.id == id }
+        if selectedLayerID == id { selectedLayerID = nil }
+        multiSelectedIDs.remove(id)
+        renumberZIndices()
     }
 
-    func removeOverlay(id: UUID) {
-        overlays.removeAll { $0.id == id }
-        if selectedOverlayID == id {
-            selectedOverlayID = nil
+    func removeSelectedLayers() {
+        if isMultiSelectActive {
+            layers.removeAll { multiSelectedIDs.contains($0.id) }
+            multiSelectedIDs.removeAll()
+            isMultiSelectActive = false
+        } else if let id = selectedLayerID {
+            removeLayer(id: id)
+        }
+    }
+
+    // MARK: - Selection
+
+    func selectLayer(id: UUID) {
+        if isMultiSelectActive {
+            if multiSelectedIDs.contains(id) {
+                multiSelectedIDs.remove(id)
+            } else {
+                multiSelectedIDs.insert(id)
+            }
+        } else {
+            selectedLayerID = id
             isEditing = false
         }
     }
 
-    func removeSelected() {
-        guard let id = selectedOverlayID else { return }
-        removeOverlay(id: id)
+    func deselectAll() {
+        selectedLayerID = nil
+        isEditing = false
+        if isMultiSelectActive {
+            multiSelectedIDs.removeAll()
+            isMultiSelectActive = false
+        }
     }
 
-    // MARK: - Update selected overlay properties
-
-    func updateText(_ text: String) {
-        guard let i = selectedIndex else { return }
-        overlays[i].text = text
+    func enterMultiSelect(startingWith id: UUID) {
+        isMultiSelectActive = true
+        multiSelectedIDs.insert(id)
+        selectedLayerID = nil
     }
 
-    func updateFont(_ family: String) {
-        guard let i = selectedIndex else { return }
-        overlays[i].fontFamily = family
+    // MARK: - Layer properties (generic mutator)
+
+    func updateLayer<T: Layer>(id: UUID, transform: (inout T) -> Void) {
+        guard let idx = layers.firstIndex(where: { $0.id == id }),
+              var typed = layers[idx] as? T else { return }
+        transform(&typed)
+        layers[idx] = typed
     }
 
-    func updateFontSize(_ size: CGFloat) {
-        guard let i = selectedIndex else { return }
-        overlays[i].fontSize = size
+    // MARK: - TextLayer convenience mutators
+
+    func updateText(id: UUID, text: String) {
+        updateLayer(id: id) { (l: inout TextLayer) in l.text = text }
     }
 
-    func updateColor(_ color: Color) {
-        guard let i = selectedIndex else { return }
-        overlays[i].textColor = color
+    func updateFont(id: UUID, fontFamily: String) {
+        updateLayer(id: id) { (l: inout TextLayer) in l.fontFamily = fontFamily }
     }
 
-    func updateAlignment(_ alignment: TextAlignment) {
-        guard let i = selectedIndex else { return }
-        overlays[i].alignment = alignment
+    func updateFontSize(id: UUID, fontSize: CGFloat) {
+        updateLayer(id: id) { (l: inout TextLayer) in l.fontSize = fontSize }
     }
 
-    func updateLetterSpacing(_ spacing: CGFloat) {
-        guard let i = selectedIndex else { return }
-        overlays[i].letterSpacing = spacing
+    func updateColor(id: UUID, color: Color) {
+        updateLayer(id: id) { (l: inout TextLayer) in l.textColor = color }
     }
 
-    func updatePosition(_ position: CGSize, for id: UUID) {
-        guard let i = overlays.firstIndex(where: { $0.id == id }) else { return }
-        overlays[i].position = position
+    func updateAlignment(id: UUID, alignment: TextAlignment) {
+        updateLayer(id: id) { (l: inout TextLayer) in l.alignment = alignment }
     }
 
-    func updateScale(_ scale: CGFloat, for id: UUID) {
-        guard let i = overlays.firstIndex(where: { $0.id == id }) else { return }
-        overlays[i].scale = scale
+    func updateLetterSpacing(id: UUID, spacing: CGFloat) {
+        updateLayer(id: id) { (l: inout TextLayer) in l.letterSpacing = spacing }
     }
 
-    func updateRotation(_ rotation: Angle, for id: UUID) {
-        guard let i = overlays.firstIndex(where: { $0.id == id }) else { return }
-        overlays[i].rotation = rotation
+    // MARK: - Layer transform mutators (both types)
+
+    func updatePosition(id: UUID, position: CGSize) {
+        if var layer = layers.first(where: { $0.id == id }) {
+            layer.position = position
+            replaceLayer(layer)
+        }
+    }
+
+    func updateScale(id: UUID, scale: CGFloat) {
+        if var layer = layers.first(where: { $0.id == id }) {
+            layer.scale = max(0.3, min(5.0, scale))
+            replaceLayer(layer)
+        }
+    }
+
+    func updateRotation(id: UUID, rotation: Angle) {
+        if var layer = layers.first(where: { $0.id == id }) {
+            layer.rotation = rotation
+            replaceLayer(layer)
+        }
+    }
+
+    // MARK: - Lock / Visibility / Z-order
+
+    func toggleLock(id: UUID) {
+        if var layer = layers.first(where: { $0.id == id }) {
+            layer.isLocked.toggle()
+            replaceLayer(layer)
+        }
+    }
+
+    func toggleVisibility(id: UUID) {
+        if var layer = layers.first(where: { $0.id == id }) {
+            layer.isVisible.toggle()
+            replaceLayer(layer)
+        }
+    }
+
+    func moveLayer(from source: IndexSet, to destination: Int) {
+        layers.move(fromOffsets: source, toOffset: destination)
+        renumberZIndices()
+    }
+
+    // MARK: - Batch (multi-select)
+
+    func batchMoveSelectedLayers(by delta: CGSize) {
+        for id in multiSelectedIDs {
+            if var layer = layers.first(where: { $0.id == id }) {
+                layer.position = CGSize(
+                    width: layer.position.width + delta.width,
+                    height: layer.position.height + delta.height
+                )
+                replaceLayer(layer)
+            }
+        }
+    }
+
+    // MARK: - Computed helpers
+
+    var sortedLayers: [any Layer] {
+        layers.sorted { $0.zIndex < $1.zIndex }
+    }
+
+    var selectedTextLayer: TextLayer? {
+        guard let id = selectedLayerID else { return nil }
+        return layers.first(where: { $0.id == id }) as? TextLayer
+    }
+
+    // MARK: - Private helpers
+
+    private func nextZIndex() -> Int {
+        (layers.map(\.zIndex).max() ?? -1) + 1
+    }
+
+    private func renumberZIndices() {
+        for i in layers.indices {
+            layers[i].zIndex = i
+        }
+    }
+
+    private func replaceLayer(_ layer: some Layer) {
+        guard let idx = layers.firstIndex(where: { $0.id == layer.id }) else { return }
+        layers[idx] = layer
     }
 }
