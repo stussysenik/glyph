@@ -5,6 +5,7 @@ struct CanvasView: View {
 
     @Environment(CanvasViewModel.self) private var vm
     @Environment(FontLibraryViewModel.self) private var fontLibrary
+    @Environment(SettingsViewModel.self) private var settings
 
     @State private var showStyleControls = false
     @State private var showFontPicker = false
@@ -12,6 +13,7 @@ struct CanvasView: View {
     @State private var showLayerPanel = false
     @State private var showBackgroundPicker = false
     @State private var showImageOverlayPicker = false
+    @State private var showSettings = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -63,6 +65,16 @@ struct CanvasView: View {
                 .presentationDragIndicator(.visible)
                 .presentationBackground(DS.Color.surface)
         }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+                .environment(settings)
+        }
+        // MARK: - Keyboard shortcuts (arrow keys for nudging selected layer)
+        .focusable()
+        .onKeyPress(.leftArrow)  { vm.nudgeSelected(dx: -1, dy:  0); return .handled }
+        .onKeyPress(.rightArrow) { vm.nudgeSelected(dx:  1, dy:  0); return .handled }
+        .onKeyPress(.upArrow)    { vm.nudgeSelected(dx:  0, dy: -1); return .handled }
+        .onKeyPress(.downArrow)  { vm.nudgeSelected(dx:  0, dy:  1); return .handled }
     }
 
     // MARK: - Top Toolbar
@@ -95,8 +107,20 @@ struct CanvasView: View {
                     .foregroundStyle(DS.Color.accent)
             }
 
+            Button { vm.showGuides.toggle() } label: {
+                Image(systemName: vm.showGuides ? "grid.circle.fill" : "grid.circle")
+                    .font(.body)
+                    .foregroundStyle(vm.showGuides ? DS.Color.accent : DS.Color.textSecondary)
+            }
+
             Button { showLayerPanel = true } label: {
                 Image(systemName: "square.3.layers.3d")
+                    .font(.body)
+                    .foregroundStyle(DS.Color.textSecondary)
+            }
+
+            Button { showSettings = true } label: {
+                Image(systemName: "gearshape")
                     .font(.body)
                     .foregroundStyle(DS.Color.textSecondary)
             }
@@ -153,6 +177,18 @@ struct CanvasView: View {
                         onPositionChange: { vm.updatePosition(id: layer.id, position: $0) },
                         onScaleChange: { vm.updateScale(id: layer.id, scale: $0) },
                         onRotationChange: { vm.updateRotation(id: layer.id, rotation: $0) }
+                    )
+                }
+            }
+
+            // Guides overlay (grid + snap lines)
+            GeometryReader { geo in
+                if vm.showGuides || !vm.activeGuides.isEmpty {
+                    GuidesOverlayView(
+                        canvasSize: geo.size,
+                        showGrid: vm.showGuides,
+                        useRuleOfThirds: vm.useRuleOfThirds,
+                        activeGuides: vm.activeGuides
                     )
                 }
             }

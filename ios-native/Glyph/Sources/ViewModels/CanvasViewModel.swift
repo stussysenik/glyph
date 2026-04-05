@@ -24,6 +24,32 @@ final class CanvasViewModel {
     /// Whether the selected text layer is being inline-edited
     var isEditing: Bool = false
 
+    // MARK: - Guide / Snap state
+
+    /// Whether the guide overlay (grid + snap lines) is visible.
+    var showGuides: Bool = false
+
+    /// Whether the rule-of-thirds grid is drawn (vs. the 8×14 grid).
+    var useRuleOfThirds: Bool = false
+
+    /// Active snap guides computed during a drag — cleared on drag end.
+    var activeGuides: [Guide] = []
+
+    /// When true, layer movement is constrained to horizontal or vertical axis.
+    var axisConstrained: Bool = false
+
+    /// The dominant axis when axisConstrained is true.
+    var constrainedAxis: GuideAxis? = nil
+
+    func updateActiveGuides(_ guides: [Guide]) {
+        activeGuides = guides
+    }
+
+    func clearActiveGuides() {
+        activeGuides = []
+        constrainedAxis = nil
+    }
+
     // MARK: - Background
 
     func setBackground(_ image: UIImage) {
@@ -186,6 +212,21 @@ final class CanvasViewModel {
     func moveLayer(from source: IndexSet, to destination: Int) {
         layers.move(fromOffsets: source, toOffset: destination)
         renumberZIndices()
+    }
+
+    // MARK: - Keyboard nudge
+
+    /// Moves the selected layer by (dx, dy) points — called from arrow-key shortcuts in CanvasView.
+    /// Respects the layer's locked state; locked layers are silently skipped.
+    func nudgeSelected(dx: CGFloat, dy: CGFloat) {
+        guard let id = selectedLayerID else { return }
+        if var layer = layers.first(where: { $0.id == id }), !layer.isLocked {
+            layer.position = CGSize(
+                width: layer.position.width + dx,
+                height: layer.position.height + dy
+            )
+            replaceLayer(layer)
+        }
     }
 
     // MARK: - Batch (multi-select)

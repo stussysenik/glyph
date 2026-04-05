@@ -5,6 +5,9 @@ private typealias DS = GlyphDesignSystem
 /// Bottom sheet with styling controls for the selected text layer.
 struct StyleControlsView: View {
     @Environment(CanvasViewModel.self) private var canvas
+    @Environment(PresetStore.self) private var presetStore
+
+    @State private var showPresets = false
 
     var body: some View {
         if let overlay = canvas.selectedTextLayer {
@@ -98,9 +101,57 @@ struct StyleControlsView: View {
                             set: { canvas.updateColor(id: overlay.id, color: $0) }
                         )
                     )
+                    ContrastBadge(
+                        foreground: overlay.textColor,
+                        background: DS.Color.canvas
+                    )
+                }
+
+                // MARK: - Presets button
+                Button { showPresets = true } label: {
+                    Text("PRESETS")
+                        .font(DS.Typography.label)
+                        .tracking(1.5)
+                        .foregroundStyle(DS.Color.accent)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, DS.Spacing.md)
+                        .background(DS.Color.accentSubtle, in: RoundedRectangle(cornerRadius: DS.Radius.md))
+                }
+                .sheet(isPresented: $showPresets) {
+                    PresetSheetView()
+                        .environment(canvas)
+                        .environment(presetStore)
+                        .presentationDetents([.medium, .large])
+                        .presentationDragIndicator(.visible)
+                        .presentationBackground(DS.Color.surface)
                 }
             }
             .padding(DS.Spacing.xl)
+        }
+    }
+}
+
+// MARK: - ContrastBadge
+
+/// Inline WCAG 2.1 AA indicator shown below the colour picker.
+/// A green dot + ratio means the current text colour is accessible
+/// on the default canvas background; a red dot flags a failure.
+private struct ContrastBadge: View {
+    private typealias DS = GlyphDesignSystem
+    let foreground: Color
+    let background: Color
+
+    private var ratio: Double { ContrastService.ratio(foreground: foreground, background: background) }
+    private var passes: Bool  { ContrastService.passesAA(foreground: foreground, background: background) }
+
+    var body: some View {
+        HStack(spacing: DS.Spacing.xs) {
+            Circle()
+                .fill(passes ? DS.Color.success : DS.Color.error)
+                .frame(width: 8, height: 8)
+            Text(String(format: "%.1f:1 %@", ratio, passes ? "AA" : "FAIL"))
+                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .foregroundStyle(DS.Color.textSecondary)
         }
     }
 }
