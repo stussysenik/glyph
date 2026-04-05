@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A1B2C3D4E5F60718DEADC0DE /* ComponentCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7C9D4E5F60718DEADC0DEBA /* ComponentCatalog.swift */; };
 		21D7ED14FE61BB73066A0EE0 /* InstagramSharer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60EBC2EC7318CE3777CF022 /* InstagramSharer.swift */; };
 		3F1E4138A2B562646FC7F59D /* GlyphApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DA518F831BFC3522A0B7 /* GlyphApp.swift */; };
 		4E937DDFE267BFFB2D2ADEE6 /* TextOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CE26D9CD8872F2B45665D9 /* TextOverlayView.swift */; };
 		51C8A53F05AED171DEDF8262 /* ColorGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BA4BF48242787E0969B421 /* ColorGrid.swift */; };
 		7AE3AAABA722933EDB88F78D /* FontEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253F2553FBDC957B8DDC6E40 /* FontEntry.swift */; };
-		87D217AA4B102EDFF313A325 /* GlyphTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578C03A4D3AF8A5F267BDB29 /* GlyphTheme.swift */; };
 		8FA5B6ABEBCA31937FC2E959 /* CanvasViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60A7CE7EA184931BFE6DF61 /* CanvasViewModel.swift */; };
 		91AC1BB4532448A0ED75BD51 /* FontPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B2EC99BC6ACC7CDD2435967 /* FontPickerSheet.swift */; };
 		99284F3FBF8D53E9025B2D5C /* FontLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D3793B0B1EC4F09915A496 /* FontLoader.swift */; };
@@ -28,10 +28,10 @@
 /* Begin PBXFileReference section */
 		23BA4BF48242787E0969B421 /* ColorGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorGrid.swift; sourceTree = "<group>"; };
 		253F2553FBDC957B8DDC6E40 /* FontEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontEntry.swift; sourceTree = "<group>"; };
+		B7C9D4E5F60718DEADC0DEBA /* ComponentCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentCatalog.swift; sourceTree = "<group>"; };
 		3B99FEC37FBF960569B5726F /* CanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasView.swift; sourceTree = "<group>"; };
 		4B2EC99BC6ACC7CDD2435967 /* FontPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontPickerSheet.swift; sourceTree = "<group>"; };
 		51747244A8400079B2DEDC05 /* TextOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOverlay.swift; sourceTree = "<group>"; };
-		578C03A4D3AF8A5F267BDB29 /* GlyphTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlyphTheme.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718DEADBEEF /* GlyphDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlyphDesignSystem.swift; sourceTree = "<group>"; };
 		7D63D8525429087E12F800F0 /* Glyph.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Glyph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		91CE26D9CD8872F2B45665D9 /* TextOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOverlayView.swift; sourceTree = "<group>"; };
@@ -69,7 +69,6 @@
 			children = (
 				B5C9DA518F831BFC3522A0B7 /* GlyphApp.swift */,
 				A1B2C3D4E5F60718DEADBEEF /* GlyphDesignSystem.swift */,
-				578C03A4D3AF8A5F267BDB29 /* GlyphTheme.swift */,
 				51AFE74C3F6FB78F7082CBCC /* Models */,
 				32DFF96EF989FA60FA6D3F58 /* Services */,
 				D936D9F2A9429A74DF217BAE /* ViewModels */,
@@ -109,6 +108,7 @@
 			children = (
 				3B99FEC37FBF960569B5726F /* CanvasView.swift */,
 				23BA4BF48242787E0969B421 /* ColorGrid.swift */,
+				B7C9D4E5F60718DEADC0DEBA /* ComponentCatalog.swift */,
 				C1B983BE3567B6E6EA5A5028 /* ExportSheet.swift */,
 				4B2EC99BC6ACC7CDD2435967 /* FontPickerSheet.swift */,
 				9331CDBFCF6E28FA74E9ECF8 /* StyleControlsView.swift */,
@@ -178,6 +178,7 @@
 				CB9CD6E075D30D84CB14EFDE /* CanvasView.swift in Sources */,
 				8FA5B6ABEBCA31937FC2E959 /* CanvasViewModel.swift in Sources */,
 				51C8A53F05AED171DEDF8262 /* ColorGrid.swift in Sources */,
+				0A1B2C3D4E5F60718DEADC0DE /* ComponentCatalog.swift in Sources */,
 				CA2A4103A6E2EC70EE1D7D7E /* ExportEngine.swift in Sources */,
 				E8F31606E6559C52FD645710 /* ExportSheet.swift in Sources */,
 				7AE3AAABA722933EDB88F78D /* FontEntry.swift in Sources */,
@@ -186,7 +187,6 @@
 				91AC1BB4532448A0ED75BD51 /* FontPickerSheet.swift in Sources */,
 				3F1E4138A2B562646FC7F59D /* GlyphApp.swift in Sources */,
 				F1A2B3C4D5E6F7081234ABCD /* GlyphDesignSystem.swift in Sources */,
-				87D217AA4B102EDFF313A325 /* GlyphTheme.swift in Sources */,
 				21D7ED14FE61BB73066A0EE0 /* InstagramSharer.swift in Sources */,
 				E67EE10AF89CD525DFF76A02 /* StyleControlsView.swift in Sources */,
 				B132FFB98428E9A2FBF134A7 /* TextOverlay.swift in Sources */,
