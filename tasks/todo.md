@@ -16,36 +16,39 @@
 - [x] Widget test — app launches correctly
 - [x] Design system — GlyphDesignSystem tokens (colors, typography, spacing, radius, shadows)
 - [x] ComponentCatalog — SwiftUI preview Storybook for all tokens
-- [x] **Layer system** — Layer protocol, TextLayer, ImageLayer, CanvasBackground
-- [x] **CanvasViewModel migration** — overlay-based → layer-based with z-order, lock, visibility, multi-select
-- [x] **Image import** — PHPickerViewController wrapper (ImagePickerView)
-- [x] **Background image** — BackgroundImageView with pinch-to-zoom, pan
-- [x] **Image overlays** — ImageOverlayView with drag, resize, rotate
-- [x] **TextOverlayView** — Migrated to callback-based Layer API
-- [x] **Layer panel** — LayerPanelView with drag-to-reorder, lock, visibility toggles
-- [x] **CanvasView rewrite** — Full layer system integration (BG, images, text, layers sheet)
-- [x] **ExportEngine** — Composites background → image layers → text layers in z-order
-- [x] **Alignment engine** — Pure snap computation (AlignmentEngine + LayerGeometry)
-- [x] **Guide types** — GuideAxis, GuideKind, Guide value types
-- [x] **Grid overlay** — GuidesOverlayView (8×14 grid, rule-of-thirds, snap lines)
-- [x] **Guide state** — showGuides, activeGuides, axisConstrained in CanvasViewModel
-- [x] **Style presets** — StylePreset model, CodableColor, CodableAlignment
-- [x] **Preset store** — PresetStore with JSON persistence in Documents
-- [x] **Preset sheet** — PresetSheetView with save, apply, rename, delete
-- [x] **HapticsService** — Centralized haptics (snap, lock, delete, export, selection)
-- [x] **ContrastService** — WCAG 2.1 ratio calculator + AA badge in StyleControls
-- [x] **SettingsViewModel** — @AppStorage persistence (grid default, snap threshold, export format)
-- [x] **SettingsView** — Form with Canvas, Export, About sections
-- [x] **Keyboard shortcuts** — Arrow-key nudge for selected layer
-- [x] **Unit tests** — 28 tests in 4 suites (AlignmentEngine, ExportEngine, LayerOrder, PresetCodable)
-- [x] **Maestro flows** — E2E test flows for add text + layer management
+- [x] Layer system — Layer protocol, TextLayer, ImageLayer, CanvasBackground
+- [x] CanvasViewModel migration — overlay-based → layer-based with z-order, lock, visibility, multi-select
+- [x] Image import — PHPickerViewController wrapper (ImagePickerView)
+- [x] Background image — BackgroundImageView with pinch-to-zoom, pan
+- [x] Image overlays — ImageOverlayView with drag, resize, rotate
+- [x] TextOverlayView — Migrated to callback-based Layer API
+- [x] Layer panel — LayerPanelView with drag-to-reorder, lock, visibility toggles
+- [x] CanvasView rewrite — Full layer system integration (BG, images, text, layers sheet)
+- [x] ExportEngine — Composites background → image layers → text layers in z-order
+- [x] Alignment engine — Pure snap computation (AlignmentEngine + LayerGeometry)
+- [x] Guide types — GuideAxis, GuideKind, Guide value types
+- [x] Grid overlay — GuidesOverlayView (8×14 grid, rule-of-thirds, snap lines)
+- [x] Guide state — showGuides, activeGuides, axisConstrained in CanvasViewModel
+- [x] Style presets — StylePreset model, CodableColor, CodableAlignment
+- [x] Preset store — PresetStore with JSON persistence in Documents
+- [x] Preset sheet — PresetSheetView with save, apply, rename, delete
+- [x] HapticsService — Centralized haptics (snap, lock, delete, export, selection)
+- [x] ContrastService — WCAG 2.1 ratio calculator + AA badge in StyleControls
+- [x] SettingsViewModel — @AppStorage persistence (grid default, snap threshold, export format)
+- [x] SettingsView — Form with Canvas, Export, About sections
+- [x] Keyboard shortcuts — Arrow-key nudge for selected layer
+- [x] **Live snap alignment** — AlignmentEngine wired into updatePosition() with haptic feedback
+- [x] **Export format/quality** — JPEG support via renderToData(), settings-driven clipboard export
+- [x] **Accessibility** — 19 labels across 6 view files, all interactive elements labeled
+- [x] **Code cleanup** — Deleted orphaned TextOverlay, fixed force-unwrap, centralized haptics
+- [x] Unit tests — 36 tests in 5 suites (AlignmentEngine, ExportEngine, LayerOrder, PresetCodable, SnapIntegration)
+- [x] Maestro flows — E2E test flows for add text + layer management
 
 ## Next Steps (Priority Order)
 - [ ] Register Facebook App ID at developers.facebook.com
 - [ ] Test on physical iOS device with Instagram installed (critical spike)
 - [ ] Verify transparent PNG alpha preservation end-to-end
 - [ ] Test with 10+ real TTF/OTF files for font loading reliability
-- [ ] Wire AlignmentEngine snap into TextOverlayView/ImageOverlayView drag gestures
 - [ ] Progressive onboarding hints (3 hints)
 - [ ] Error state handling for permissions
 - [ ] TestFlight beta build
