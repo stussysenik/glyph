@@ -74,9 +74,10 @@ struct FontPickerSheet: View {
                 case .success(let urls):
                     if let url = urls.first {
                         let success = fontLibrary.importFont(from: url)
-                        if success, let last = fontLibrary.fonts.last {
-                            canvas.updateFont(last.familyName)
-                        } else {
+                        if success, let last = fontLibrary.fonts.last,
+                           let id = canvas.selectedLayerID {
+                            canvas.updateFont(id: id, fontFamily: last.familyName)
+                        } else if !success {
                             importError = true
                         }
                     }
@@ -95,13 +96,15 @@ struct FontPickerSheet: View {
     @ViewBuilder
     private func fontRow(_ entry: FontEntry) -> some View {
         Button {
-            canvas.updateFont(entry.familyName)
+            if let id = canvas.selectedLayerID {
+                canvas.updateFont(id: id, fontFamily: entry.familyName)
+            }
             UISelectionFeedbackGenerator().selectionChanged()
             dismiss()
         } label: {
             HStack {
-                Text(canvas.selectedOverlay?.text.isEmpty == false
-                     ? canvas.selectedOverlay!.text
+                Text(canvas.selectedTextLayer?.text.isEmpty == false
+                     ? canvas.selectedTextLayer!.text
                      : entry.displayName)
                     .font(.custom(entry.familyName, size: 20))
                     .foregroundStyle(DS.Color.textPrimary)
@@ -109,7 +112,7 @@ struct FontPickerSheet: View {
 
                 Spacer()
 
-                if canvas.selectedOverlay?.fontFamily == entry.familyName {
+                if canvas.selectedTextLayer?.fontFamily == entry.familyName {
                     Image(systemName: "checkmark")
                         .foregroundStyle(DS.Color.accent)
                 }

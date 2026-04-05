@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		AA11BB22CC33DD44EE55FF60 /* CanvasLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF61 /* CanvasLayer.swift */; };
 		AA11BB22CC33DD44EE55FF62 /* CanvasBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF63 /* CanvasBackground.swift */; };
+		BB11CC22DD33EE44FF550001 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB11CC22DD33EE44FF550002 /* ImagePickerView.swift */; };
+		BB11CC22DD33EE44FF550003 /* BackgroundImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB11CC22DD33EE44FF550004 /* BackgroundImageView.swift */; };
+		BB11CC22DD33EE44FF550005 /* ImageOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB11CC22DD33EE44FF550006 /* ImageOverlayView.swift */; };
+		BB11CC22DD33EE44FF550007 /* LayerPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB11CC22DD33EE44FF550008 /* LayerPanelView.swift */; };
 		21D7ED14FE61BB73066A0EE0 /* InstagramSharer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B60EBC2EC7318CE3777CF022 /* InstagramSharer.swift */; };
 		3F1E4138A2B562646FC7F59D /* GlyphApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C9DA518F831BFC3522A0B7 /* GlyphApp.swift */; };
 		4E937DDFE267BFFB2D2ADEE6 /* TextOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91CE26D9CD8872F2B45665D9 /* TextOverlayView.swift */; };
@@ -30,6 +34,10 @@
 /* Begin PBXFileReference section */
 		AA11BB22CC33DD44EE55FF61 /* CanvasLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasLayer.swift; sourceTree = "<group>"; };
 		AA11BB22CC33DD44EE55FF63 /* CanvasBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanvasBackground.swift; sourceTree = "<group>"; };
+		BB11CC22DD33EE44FF550002 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
+		BB11CC22DD33EE44FF550004 /* BackgroundImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundImageView.swift; sourceTree = "<group>"; };
+		BB11CC22DD33EE44FF550006 /* ImageOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOverlayView.swift; sourceTree = "<group>"; };
+		BB11CC22DD33EE44FF550008 /* LayerPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerPanelView.swift; sourceTree = "<group>"; };
 		1A09D3483ECF87EE18F37B1E /* ComponentCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentCatalog.swift; sourceTree = "<group>"; };
 		23BA4BF48242787E0969B421 /* ColorGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorGrid.swift; sourceTree = "<group>"; };
 		253F2553FBDC957B8DDC6E40 /* FontEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontEntry.swift; sourceTree = "<group>"; };
@@ -112,11 +120,15 @@
 		F298526F74F0FD41DDB3A271 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BB11CC22DD33EE44FF550004 /* BackgroundImageView.swift */,
 				3B99FEC37FBF960569B5726F /* CanvasView.swift */,
 				23BA4BF48242787E0969B421 /* ColorGrid.swift */,
 				1A09D3483ECF87EE18F37B1E /* ComponentCatalog.swift */,
 				C1B983BE3567B6E6EA5A5028 /* ExportSheet.swift */,
 				4B2EC99BC6ACC7CDD2435967 /* FontPickerSheet.swift */,
+				BB11CC22DD33EE44FF550006 /* ImageOverlayView.swift */,
+				BB11CC22DD33EE44FF550002 /* ImagePickerView.swift */,
+				BB11CC22DD33EE44FF550008 /* LayerPanelView.swift */,
 				9331CDBFCF6E28FA74E9ECF8 /* StyleControlsView.swift */,
 				91CE26D9CD8872F2B45665D9 /* TextOverlayView.swift */,
 			);
@@ -185,6 +197,10 @@
 				AA11BB22CC33DD44EE55FF62 /* CanvasBackground.swift in Sources */,
 				AA11BB22CC33DD44EE55FF60 /* CanvasLayer.swift in Sources */,
 				CB9CD6E075D30D84CB14EFDE /* CanvasView.swift in Sources */,
+				BB11CC22DD33EE44FF550003 /* BackgroundImageView.swift in Sources */,
+				BB11CC22DD33EE44FF550005 /* ImageOverlayView.swift in Sources */,
+				BB11CC22DD33EE44FF550001 /* ImagePickerView.swift in Sources */,
+				BB11CC22DD33EE44FF550007 /* LayerPanelView.swift in Sources */,
 				8FA5B6ABEBCA31937FC2E959 /* CanvasViewModel.swift in Sources */,
 				51C8A53F05AED171DEDF8262 /* ColorGrid.swift in Sources */,
 				80678EFAB96B2AE496ACA88F /* ComponentCatalog.swift in Sources */,

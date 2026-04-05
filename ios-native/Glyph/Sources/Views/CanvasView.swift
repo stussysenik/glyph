@@ -1,88 +1,169 @@
 import SwiftUI
 
-private typealias DS = GlyphDesignSystem
-
-/// The main (and only) screen — light canvas with text overlays and controls.
 struct CanvasView: View {
-    @Environment(CanvasViewModel.self) private var canvas
+    private typealias DS = GlyphDesignSystem
+
+    @Environment(CanvasViewModel.self) private var vm
     @Environment(FontLibraryViewModel.self) private var fontLibrary
 
     @State private var showStyleControls = false
     @State private var showFontPicker = false
     @State private var showExportSheet = false
+    @State private var showLayerPanel = false
+    @State private var showBackgroundPicker = false
+    @State private var showImageOverlayPicker = false
 
     var body: some View {
+        VStack(spacing: 0) {
+            topToolbar
+            canvas
+            bottomControls
+        }
+        .background(DS.Color.surface.ignoresSafeArea())
+        .sheet(isPresented: $showBackgroundPicker) {
+            ImagePickerView { image in
+                vm.setBackground(image)
+                showBackgroundPicker = false
+            }
+        }
+        .sheet(isPresented: $showImageOverlayPicker) {
+            ImagePickerView { image in
+                vm.addImageLayer(image)
+                showImageOverlayPicker = false
+            }
+        }
+        .sheet(isPresented: $showLayerPanel) {
+            LayerPanelView()
+                .environment(vm)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(DS.Color.surface)
+        }
+        .sheet(isPresented: $showStyleControls) {
+            if vm.selectedTextLayer != nil {
+                StyleControlsView()
+                    .environment(vm)
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
+                    .presentationBackground(DS.Color.surface)
+            }
+        }
+        .sheet(isPresented: $showFontPicker) {
+            FontPickerSheet()
+                .environment(vm)
+                .environment(fontLibrary)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(DS.Color.surface)
+        }
+        .sheet(isPresented: $showExportSheet) {
+            ExportSheet()
+                .environment(vm)
+                .presentationDetents([.height(280)])
+                .presentationDragIndicator(.visible)
+                .presentationBackground(DS.Color.surface)
+        }
+    }
+
+    // MARK: - Top Toolbar
+
+    private var topToolbar: some View {
+        HStack(spacing: DS.Spacing.md) {
+            Button { showBackgroundPicker = true } label: {
+                Text("BG")
+                    .font(DS.Typography.label)
+                    .tracking(1.5)
+                    .foregroundStyle(DS.Color.textSecondary)
+            }
+
+            Button { showImageOverlayPicker = true } label: {
+                Image(systemName: "photo.on.rectangle")
+                    .font(.body)
+                    .foregroundStyle(DS.Color.textSecondary)
+            }
+
+            Spacer()
+
+            Button {
+                let font = fontLibrary.fonts.first?.familyName ?? "Playfair Display"
+                vm.addTextLayer(fontFamily: font)
+                showStyleControls = true
+            } label: {
+                Text("ADD TEXT")
+                    .font(DS.Typography.label)
+                    .tracking(1.5)
+                    .foregroundStyle(DS.Color.accent)
+            }
+
+            Button { showLayerPanel = true } label: {
+                Image(systemName: "square.3.layers.3d")
+                    .font(.body)
+                    .foregroundStyle(DS.Color.textSecondary)
+            }
+
+            if !vm.layers.isEmpty {
+                Button { showExportSheet = true } label: {
+                    Text("EXPORT")
+                        .font(DS.Typography.label)
+                        .tracking(1.5)
+                        .foregroundStyle(DS.Color.accent)
+                }
+            }
+        }
+        .padding(.horizontal, DS.Spacing.xl)
+        .padding(.vertical, DS.Spacing.sm)
+    }
+
+    // MARK: - Canvas
+
+    private var canvas: some View {
         ZStack {
-            DS.Color.canvas
-                .ignoresSafeArea()
-                .onTapGesture {
-                    canvas.deselectAll()
-                    showStyleControls = false
-                }
-
-            ForEach(canvas.overlays) { overlay in
-                TextOverlayView(
-                    overlay: overlay,
-                    isSelected: canvas.selectedOverlayID == overlay.id
+            // Background
+            if let background = vm.background {
+                BackgroundImageView(
+                    background: background,
+                    onScaleChange: { vm.updateBackgroundScale($0) },
+                    onOffsetChange: { vm.updateBackgroundOffset($0) }
                 )
+            } else {
+                DS.Color.canvas
             }
 
-            VStack {
-                HStack {
-                    Button {
-                        let font = fontLibrary.fonts.first?.familyName ?? "Playfair Display"
-                        canvas.addOverlay(fontFamily: font)
-                        showStyleControls = true
-                    } label: {
-                        Text("ADD TEXT")
-                            .font(DS.Typography.label)
-                            .tracking(1.5)
-                            .foregroundStyle(DS.Color.accent)
-                    }
-
-                    Spacer()
-
-                    if !canvas.overlays.isEmpty {
-                        Button {
-                            showExportSheet = true
-                        } label: {
-                            Text("EXPORT")
-                                .font(DS.Typography.label)
-                                .tracking(1.5)
-                                .foregroundStyle(DS.Color.accent)
-                        }
-                    }
-                }
-                .padding(.horizontal, DS.Spacing.xl)
-                .padding(.top, DS.Spacing.sm)
-
-                Spacer()
-
-                if canvas.selectedOverlay != nil {
-                    HStack(spacing: DS.Spacing.lg) {
-                        controlButton(icon: "textformat") {
-                            showFontPicker = true
-                        }
-
-                        controlButton(icon: "slider.horizontal.3") {
-                            showStyleControls = true
-                        }
-
-                        controlButton(icon: "trash", tint: DS.Color.error) {
-                            canvas.removeSelected()
-                            showStyleControls = false
-                        }
-                    }
-                    .padding(.bottom, DS.Spacing.xl)
+            // Layers in z-order
+            ForEach(vm.sortedLayers, id: \.id) { layer in
+                if let imageLayer = layer as? ImageLayer {
+                    ImageOverlayView(
+                        layer: imageLayer,
+                        isSelected: vm.selectedLayerID == layer.id,
+                        onSelect: { vm.selectLayer(id: layer.id) },
+                        onLongPress: { vm.enterMultiSelect(startingWith: layer.id) },
+                        onPositionChange: { vm.updatePosition(id: layer.id, position: $0) },
+                        onScaleChange: { vm.updateScale(id: layer.id, scale: $0) },
+                        onRotationChange: { vm.updateRotation(id: layer.id, rotation: $0) }
+                    )
+                } else if let textLayer = layer as? TextLayer {
+                    TextOverlayView(
+                        layer: textLayer,
+                        isSelected: vm.selectedLayerID == layer.id,
+                        onSelect: { vm.selectLayer(id: layer.id) },
+                        onEdit: {
+                            vm.selectLayer(id: layer.id)
+                            vm.isEditing = true
+                        },
+                        onPositionChange: { vm.updatePosition(id: layer.id, position: $0) },
+                        onScaleChange: { vm.updateScale(id: layer.id, scale: $0) },
+                        onRotationChange: { vm.updateRotation(id: layer.id, rotation: $0) }
+                    )
                 }
             }
 
-            if canvas.isEditing, let overlay = canvas.selectedOverlay {
+            // Inline text editor
+            if vm.isEditing, let textLayer = vm.selectedTextLayer {
                 VStack {
                     Spacer()
                     TextField("Type something", text: Binding(
-                        get: { overlay.text },
-                        set: { canvas.updateText($0) }
+                        get: { textLayer.text },
+                        set: { vm.updateText(id: textLayer.id, text: $0) }
                     ))
                     .font(DS.Typography.title)
                     .foregroundStyle(DS.Color.textPrimary)
@@ -95,31 +176,31 @@ struct CanvasView: View {
                 .transition(.move(edge: .bottom))
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: canvas.selectedOverlayID)
-        .animation(.easeInOut(duration: 0.2), value: canvas.isEditing)
-        .sheet(isPresented: $showStyleControls) {
-            if canvas.selectedOverlay != nil {
-                StyleControlsView()
-                    .environment(canvas)
-                    .presentationDetents([.medium])
-                    .presentationDragIndicator(.visible)
-                    .presentationBackground(DS.Color.surface)
+        .ignoresSafeArea(edges: .bottom)
+        .onTapGesture {
+            vm.deselectAll()
+            showStyleControls = false
+        }
+        .animation(.easeInOut(duration: 0.2), value: vm.selectedLayerID)
+        .animation(.easeInOut(duration: 0.2), value: vm.isEditing)
+    }
+
+    // MARK: - Bottom Controls
+
+    @ViewBuilder
+    private var bottomControls: some View {
+        if vm.selectedLayerID != nil {
+            HStack(spacing: DS.Spacing.lg) {
+                if vm.selectedTextLayer != nil {
+                    controlButton(icon: "textformat") { showFontPicker = true }
+                    controlButton(icon: "slider.horizontal.3") { showStyleControls = true }
+                }
+                controlButton(icon: "trash", tint: DS.Color.error) {
+                    vm.removeSelectedLayers()
+                    showStyleControls = false
+                }
             }
-        }
-        .sheet(isPresented: $showFontPicker) {
-            FontPickerSheet()
-                .environment(canvas)
-                .environment(fontLibrary)
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
-                .presentationBackground(DS.Color.surface)
-        }
-        .sheet(isPresented: $showExportSheet) {
-            ExportSheet()
-                .environment(canvas)
-                .presentationDetents([.height(280)])
-                .presentationDragIndicator(.visible)
-                .presentationBackground(DS.Color.surface)
+            .padding(.vertical, DS.Spacing.lg)
         }
     }
 

@@ -97,7 +97,7 @@ struct ExportSheet: View {
 
     private func renderImage() -> UIImage? {
         let canvasSize = CGSize(width: 1080, height: 1920)
-        return ExportEngine.renderOverlays(canvas.overlays, canvasSize: canvasSize)
+        return ExportEngine.renderLayers(canvas.layers, background: canvas.background, canvasSize: canvasSize)
     }
 
     private func exportToInstagram() async {

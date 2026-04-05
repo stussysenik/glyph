@@ -2,12 +2,12 @@ import SwiftUI
 
 private typealias DS = GlyphDesignSystem
 
-/// Bottom sheet with styling controls for the selected overlay.
+/// Bottom sheet with styling controls for the selected text layer.
 struct StyleControlsView: View {
     @Environment(CanvasViewModel.self) private var canvas
 
     var body: some View {
-        if let overlay = canvas.selectedOverlay {
+        if let overlay = canvas.selectedTextLayer {
             VStack(spacing: DS.Spacing.xl) {
                 VStack(alignment: .leading, spacing: DS.Spacing.sm) {
                     HStack {
@@ -23,7 +23,7 @@ struct StyleControlsView: View {
                     Slider(
                         value: Binding(
                             get: { overlay.fontSize },
-                            set: { canvas.updateFontSize($0) }
+                            set: { canvas.updateFontSize(id: overlay.id, fontSize: $0) }
                         ),
                         in: 24...200,
                         step: 1
@@ -45,7 +45,7 @@ struct StyleControlsView: View {
                     Slider(
                         value: Binding(
                             get: { overlay.letterSpacing },
-                            set: { canvas.updateLetterSpacing($0) }
+                            set: { canvas.updateLetterSpacing(id: overlay.id, spacing: $0) }
                         ),
                         in: -5...20,
                         step: 0.5
@@ -66,7 +66,7 @@ struct StyleControlsView: View {
                         id: \.0.hashValue
                     ) { alignment, icon in
                         Button {
-                            canvas.updateAlignment(alignment)
+                            canvas.updateAlignment(id: overlay.id, alignment: alignment)
                             UISelectionFeedbackGenerator().selectionChanged()
                         } label: {
                             Image(systemName: icon)
@@ -95,7 +95,7 @@ struct StyleControlsView: View {
                     ColorGrid(
                         selectedColor: Binding(
                             get: { overlay.textColor },
-                            set: { canvas.updateColor($0) }
+                            set: { canvas.updateColor(id: overlay.id, color: $0) }
                         )
                     )
                 }
