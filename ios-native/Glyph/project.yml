@@ -1,0 +1,42 @@
+name: Glyph
+options:
+  bundleIdPrefix: com.glyphapp
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    CODE_SIGN_STYLE: Automatic
+    INFOPLIST_FILE: Resources/Info.plist
+
+targets:
+  Glyph:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Sources
+        createIntermediateGroups: true
+    resources:
+      - path: Resources
+        createIntermediateGroups: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.glyphapp.glyph
+        GENERATE_INFOPLIST_FILE: false
+        INFOPLIST_FILE: Resources/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+schemes:
+  Glyph:
+    build:
+      targets:
+        Glyph: all
+    run:
+      config: Debug
+    test:
+      config: Debug

@@ -43,3 +43,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Xcode / SwiftUI
+ios-native/**/build/
+ios-native/**/*.xcodeproj/xcuserdata/
+ios-native/**/*.xcworkspace/xcuserdata/
+*.xcuserstate
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
