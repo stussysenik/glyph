@@ -1,12 +1,12 @@
 import SwiftUI
 
-struct TextOverlayView: View {
+struct ImageOverlayView: View {
     private typealias DS = GlyphDesignSystem
 
-    var layer: TextLayer
+    var layer: ImageLayer
     var isSelected: Bool
     var onSelect: () -> Void
-    var onEdit: () -> Void
+    var onLongPress: () -> Void
     var onPositionChange: (CGSize) -> Void
     var onScaleChange: (CGFloat) -> Void
     var onRotationChange: (Angle) -> Void
@@ -15,13 +15,13 @@ struct TextOverlayView: View {
     @GestureState private var gestureScale: CGFloat = 1.0
     @GestureState private var gestureRotation: Angle = .zero
 
+    private let baseWidth: CGFloat = 200
+
     var body: some View {
-        Text(layer.text.isEmpty ? " " : layer.text)
-            .font(.custom(layer.fontFamily, size: layer.fontSize))
-            .foregroundStyle(layer.textColor)
-            .multilineTextAlignment(layer.alignment)
-            .tracking(layer.letterSpacing)
-            .padding(.horizontal, DS.Spacing.sm)
+        Image(uiImage: layer.image)
+            .resizable()
+            .aspectRatio(layer.aspectRatio, contentMode: .fit)
+            .frame(width: baseWidth)
             .scaleEffect(layer.scale * gestureScale)
             .rotationEffect(layer.rotation + gestureRotation)
             .offset(
@@ -33,7 +33,7 @@ struct TextOverlayView: View {
             .allowsHitTesting(layer.isVisible)
             .gesture(layer.isLocked ? nil : combinedGesture)
             .onTapGesture { onSelect() }
-            .onLongPressGesture(minimumDuration: 0.4) { onEdit() }
+            .onLongPressGesture(minimumDuration: 0.4) { onLongPress() }
     }
 
     @ViewBuilder
@@ -44,7 +44,7 @@ struct TextOverlayView: View {
                     layer.isLocked ? DS.Color.textTertiary : DS.Color.accent,
                     style: StrokeStyle(lineWidth: 2, dash: layer.isLocked ? [6, 3] : [])
                 )
-                .padding(-6)
+                .padding(-4)
         }
     }
 
