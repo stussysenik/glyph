@@ -16,14 +16,16 @@ struct FontPickerSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("Built-in") {
+                Section {
                     ForEach(fontLibrary.bundledFonts) { entry in
                         fontRow(entry)
                     }
+                } header: {
+                    Label("Built-in", systemImage: "textformat")
                 }
 
                 if !fontLibrary.customFonts.isEmpty {
-                    Section("Your Fonts") {
+                    Section {
                         ForEach(fontLibrary.customFonts) { entry in
                             fontRow(entry)
                         }
@@ -33,6 +35,8 @@ struct FontPickerSheet: View {
                                 fontLibrary.removeFont(id: customs[index].id)
                             }
                         }
+                    } header: {
+                        Label("Your Fonts", systemImage: "folder")
                     }
                 }
             }
@@ -46,10 +50,14 @@ struct FontPickerSheet: View {
                     Button {
                         showImporter = true
                     } label: {
-                        Text("IMPORT")
-                            .font(DS.Typography.label)
-                            .tracking(1.5)
-                            .foregroundStyle(DS.Color.accent)
+                        HStack(spacing: DS.Spacing.xs) {
+                            Image(systemName: "plus.circle")
+                                .font(.body)
+                            Text("IMPORT")
+                                .font(DS.Typography.label)
+                                .tracking(1.5)
+                        }
+                        .foregroundStyle(DS.Color.accent)
                     }
                     .accessibilityLabel("Import custom font")
                 }
@@ -104,22 +112,38 @@ struct FontPickerSheet: View {
             haptics.selectionChanged()
             dismiss()
         } label: {
-            HStack {
-                let previewText = canvas.selectedTextLayer?.text ?? ""
-                Text(previewText.isEmpty ? entry.displayName : previewText)
-                    .font(.custom(entry.familyName, size: 20))
-                    .foregroundStyle(DS.Color.textPrimary)
-                    .lineLimit(1)
+            HStack(spacing: DS.Spacing.md) {
+                // Font name rendered in its own typeface
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(entry.displayName)
+                        .font(.custom(entry.familyName, size: 20))
+                        .foregroundStyle(DS.Color.textPrimary)
+                        .lineLimit(1)
+
+                    // Show a preview phrase in the font
+                    let previewText = canvas.selectedTextLayer?.text ?? ""
+                    if !previewText.isEmpty && previewText != "Tap to edit" {
+                        Text(previewText)
+                            .font(.custom(entry.familyName, size: 14))
+                            .foregroundStyle(DS.Color.textSecondary)
+                            .lineLimit(1)
+                    }
+                }
 
                 Spacer()
 
                 if canvas.selectedTextLayer?.fontFamily == entry.familyName {
-                    Image(systemName: "checkmark")
+                    Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(DS.Color.accent)
+                        .font(.title3)
                 }
             }
             .padding(.vertical, DS.Spacing.xs)
         }
-        .listRowBackground(DS.Color.canvas)
+        .listRowBackground(
+            canvas.selectedTextLayer?.fontFamily == entry.familyName
+                ? DS.Color.accent.opacity(0.08)
+                : DS.Color.canvas
+        )
     }
 }

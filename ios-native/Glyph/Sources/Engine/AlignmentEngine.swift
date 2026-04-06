@@ -1,4 +1,4 @@
-import CoreGraphics
+import SwiftUI
 
 enum AlignmentEngine {
     static let defaultThreshold: CGFloat = 8
@@ -112,5 +112,59 @@ struct LayerGeometry: Sendable {
         minY = position.height - hh
         centerY = position.height
         maxY = position.height + hh
+    }
+}
+
+// MARK: - Rotation Snap
+
+/// Snaps rotation angles to cardinal values (0°, 90°, 180°, 270°).
+/// Provides the same magnetic "click" feel that Procreate and iOS Camera
+/// offer when rotating — a subtle haptic anchor that makes free-form
+/// rotation feel precise.
+enum RotationSnapEngine {
+    /// Cardinal angles in degrees. Includes ±equivalents so snapping
+    /// works regardless of rotation direction.
+    static let cardinals: [CGFloat] = [0, 90, 180, 270, -90, -180, -270, 360, -360]
+
+    /// Default snap threshold in degrees — narrow enough to avoid
+    /// accidental triggers, wide enough to feel magnetic.
+    static let defaultThreshold: Double = 5
+
+    /// If `angle` is within `threshold` degrees of any cardinal angle,
+    /// returns that cardinal angle. Otherwise returns `nil`.
+    ///
+    /// The result is always normalised to [0°, 360°).
+    static func snap(_ angle: Angle, threshold: Double = defaultThreshold) -> Angle? {
+        let degrees = angle.degrees
+        let thresholdDeg = threshold
+
+        for cardinal in cardinals {
+            if abs(degrees - cardinal) <= thresholdDeg {
+                // Normalize to [0, 360)
+                var snapped = cardinal
+                snapped = snapped.truncatingRemainder(dividingBy: 360)
+                if snapped < 0 { snapped += 360 }
+                return .degrees(snapped)
+            }
+        }
+        return nil
+    }
+
+    /// Convenience: returns the nearest cardinal angle regardless of
+    /// threshold. Useful for double-tap "snap to nearest 90°" gesture.
+    static func nearestCardinal(_ angle: Angle) -> Angle {
+        let degrees = angle.degrees
+        var nearest: CGFloat = 0
+        var smallestDelta: CGFloat = .infinity
+        for cardinal in cardinals {
+            let delta = abs(degrees - cardinal)
+            if delta < smallestDelta {
+                smallestDelta = delta
+                nearest = cardinal
+            }
+        }
+        var snapped = nearest.truncatingRemainder(dividingBy: 360)
+        if snapped < 0 { snapped += 360 }
+        return .degrees(snapped)
     }
 }

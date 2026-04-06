@@ -41,11 +41,11 @@
 	<string>Save your font stickers to Photos</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Fonts/PlayfairDisplay-Bold.ttf</string>
-		<string>Fonts/SpaceGrotesk-Bold.ttf</string>
-		<string>Fonts/ArchivoBlack-Regular.ttf</string>
-		<string>Fonts/Caveat-Regular.ttf</string>
-		<string>Fonts/DMSerifDisplay-Regular.ttf</string>
+		<string>PlayfairDisplay-Bold.ttf</string>
+		<string>SpaceGrotesk-Bold.ttf</string>
+		<string>ArchivoBlack-Regular.ttf</string>
+		<string>Caveat-Regular.ttf</string>
+		<string>DMSerifDisplay-Regular.ttf</string>
 	</array>
 </dict>
 </plist>

@@ -27,4 +27,7 @@ final class HapticsService {
 
     /// Fired when a discrete selection changes (color swatch, alignment, etc.).
     func selectionChanged() { select.selectionChanged() }
+
+    /// Fired when rotation snaps to a cardinal angle (0°, 90°, 180°, 270°).
+    func rotationSnap()     { select.selectionChanged() }
 }

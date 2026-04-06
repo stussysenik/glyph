@@ -9,15 +9,26 @@ enum GlyphDesignSystem {
 
     // MARK: - Color
 
+    /// Default accent hex — neon green.
+    static let defaultAccentHex: UInt = 0x39FF14
+
     enum Color {
         static let canvas       = SwiftUI.Color(hex: 0xFFFFFF)
         static let surface      = SwiftUI.Color(hex: 0xF7F7F7)
         static let surfaceAlt   = SwiftUI.Color(hex: 0xEBEBEB)
-        static let accent       = SwiftUI.Color(hex: 0x39FF14)
-        static let accentSubtle = SwiftUI.Color(hex: 0x39FF14).opacity(0.15)
+
+        /// Accent color — reads the user's stored preference (falls back to neon green).
+        static var accent: SwiftUI.Color {
+            let stored = UserDefaults.standard.integer(forKey: "app.accentColorHex")
+            return stored == 0
+                ? SwiftUI.Color(hex: GlyphDesignSystem.defaultAccentHex)
+                : SwiftUI.Color(hex: UInt(stored))
+        }
+        static var accentSubtle: SwiftUI.Color { accent.opacity(0.15) }
+
         static let textPrimary  = SwiftUI.Color(hex: 0x1A1A1A)
-        static let textSecondary = SwiftUI.Color(hex: 0x6B6B6B)
-        static let textTertiary = SwiftUI.Color(hex: 0xB0B0B0)
+        static let textSecondary = SwiftUI.Color(hex: 0x595959)  // 5.9:1 on surface — WCAG AA
+        static let textTertiary = SwiftUI.Color(hex: 0x757575)   // 4.6:1 on surface — WCAG AA
         static let border       = SwiftUI.Color(hex: 0xE0E0E0)
         static let borderSubtle = SwiftUI.Color(hex: 0xF0F0F0)
         static let error        = SwiftUI.Color(hex: 0xFF3B30)
@@ -25,14 +36,16 @@ enum GlyphDesignSystem {
     }
 
     // MARK: - Typography
+    // Uses semantic text styles so UI chrome scales with Dynamic Type.
+    // Canvas text (user-controlled font size) is NOT affected.
 
     enum Typography {
-        static let display = Font.system(size: 28, weight: .bold)
-        static let title   = Font.system(size: 20, weight: .semibold)
-        static let body    = Font.system(size: 16, weight: .regular)
-        static let caption = Font.system(size: 13, weight: .regular)
+        static let display = Font.title.bold()
+        static let title   = Font.title3.weight(.semibold)
+        static let body    = Font.body
+        static let caption = Font.caption
         /// Monospaced uppercase label — the Heron Preston / iA Writer signature.
-        static let label   = Font.system(size: 11, weight: .medium, design: .monospaced)
+        static let label   = Font.caption2.monospaced().weight(.medium)
     }
 
     // MARK: - Spacing

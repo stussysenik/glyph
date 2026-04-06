@@ -7,6 +7,7 @@ struct StyleControlsView: View {
     @Environment(CanvasViewModel.self) private var canvas
     @Environment(PresetStore.self) private var presetStore
     @Environment(HapticsService.self) private var haptics
+    @Environment(SettingsViewModel.self) private var settings
 
     @State private var showPresets = false
 
@@ -82,7 +83,7 @@ struct StyleControlsView: View {
                                         ? DS.Color.accent
                                         : DS.Color.textSecondary
                                 )
-                                .frame(width: 40, height: 36)
+                                .frame(width: 44, height: 44)
                                 .background(
                                     overlay.alignment == alignment
                                         ? DS.Color.accent.opacity(0.15)
@@ -103,7 +104,9 @@ struct StyleControlsView: View {
                         selectedColor: Binding(
                             get: { overlay.textColor },
                             set: { canvas.updateColor(id: overlay.id, color: $0) }
-                        )
+                        ),
+                        recentColorHexes: settings.recentColors,
+                        onColorUsed: { settings.addRecentColor(hex: $0) }
                     )
                     ContrastBadge(
                         foreground: overlay.textColor,

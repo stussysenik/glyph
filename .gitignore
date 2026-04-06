@@ -44,6 +44,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Flutter build artifacts
+flutter/build/
+flutter/.flutter-plugins
+
 # Xcode / SwiftUI
 ios-native/**/build/
 ios-native/**/*.xcodeproj/xcuserdata/
@@ -54,3 +58,9 @@ DerivedData/
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+# One-off scripts
+ios-native/Glyph/add_tests.rb
+
+# Agent config
+.superpowers/

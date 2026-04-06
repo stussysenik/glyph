@@ -4,9 +4,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'features/canvas/canvas_screen.dart';
 import 'shared/theme/app_theme.dart';
+import 'shared/accessibility/accessibility_utils.dart';
+import 'core/undo_redo.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Register keyboard shortcuts and accessibility features
+  UndoRedoManager.registerShortcuts();
+  AccessibilityUtils.registerKeyboardShortcuts(
+    onUndo: () => {},
+    onRedo: () => {},
+    onShake: () => {},
+  );
 
   // Lock to portrait — Stories are vertical
   SystemChrome.setPreferredOrientations([

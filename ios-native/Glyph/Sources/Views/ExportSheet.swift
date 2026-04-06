@@ -10,9 +10,13 @@ struct ExportSheet: View {
     @Environment(SettingsViewModel.self) private var settings
     @Environment(\.dismiss) private var dismiss
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     @State private var isExporting = false
     @State private var toastMessage: String?
     @State private var showInstagramAlert = false
+    @State private var cachedImage: UIImage?
+    @State private var previewImage: UIImage?
 
     var body: some View {
         VStack(spacing: DS.Spacing.lg) {
@@ -21,6 +25,25 @@ struct ExportSheet: View {
                 .tracking(1.5)
                 .foregroundStyle(DS.Color.textTertiary)
                 .padding(.top, DS.Spacing.xs)
+
+            // MARK: - Preview
+            if let preview = previewImage {
+                Image(uiImage: preview)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxHeight: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: DS.Radius.md))
+                    .shadow(color: .black.opacity(0.10), radius: 6, y: 3)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DS.Radius.md)
+                            .stroke(DS.Color.border, lineWidth: 0.5)
+                    )
+            } else {
+                RoundedRectangle(cornerRadius: DS.Radius.md)
+                    .fill(DS.Color.surfaceAlt)
+                    .frame(maxHeight: 200)
+                    .overlay { ProgressView() }
+            }
 
             Button {
                 Task { await exportToInstagram() }
@@ -82,7 +105,7 @@ struct ExportSheet: View {
                         .background(.ultraThinMaterial, in: Capsule())
                     Spacer()
                 }
-                .transition(.move(edge: .top).combined(with: .opacity))
+                .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                         withAnimation { toastMessage = nil }
@@ -90,6 +113,7 @@ struct ExportSheet: View {
                 }
             }
         }
+        .task { renderPreview() }
         .animation(.easeInOut, value: toastMessage)
         .alert("Instagram Not Installed", isPresented: $showInstagramAlert) {
             Button("Save to Photos Instead") {
@@ -102,8 +126,11 @@ struct ExportSheet: View {
     }
 
     private func renderImage() -> UIImage? {
+        if let cached = cachedImage { return cached }
         let canvasSize = CGSize(width: 1080, height: 1920)
-        return ExportEngine.renderLayers(canvas.layers, background: canvas.background, canvasSize: canvasSize)
+        let image = ExportEngine.renderLayers(canvas.layers, background: canvas.background, canvasSize: canvasSize)
+        cachedImage = image
+        return image
     }
 
     private func exportToInstagram() async {
@@ -170,7 +197,13 @@ struct ExportSheet: View {
         showToast("Copied!")
     }
 
+    private func renderPreview() {
+        let size = CGSize(width: 360, height: 640)
+        previewImage = ExportEngine.renderLayers(canvas.layers, background: canvas.background, canvasSize: size)
+    }
+
     private func showToast(_ message: String) {
         withAnimation { toastMessage = message }
+        UIAccessibility.post(notification: .announcement, argument: message)
     }
 }

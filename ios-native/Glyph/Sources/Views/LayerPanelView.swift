@@ -114,6 +114,8 @@ private struct LayerRowView: View {
                 Image(systemName: layer.isLocked ? "lock.fill" : "lock.open")
                     .font(.system(size: 16))
                     .foregroundStyle(layer.isLocked ? DS.Color.accent : DS.Color.textTertiary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel(layer.isLocked ? "Unlock layer" : "Lock layer")
@@ -122,6 +124,8 @@ private struct LayerRowView: View {
                 Image(systemName: layer.isVisible ? "eye" : "eye.slash")
                     .font(.system(size: 16))
                     .foregroundStyle(layer.isVisible ? DS.Color.textSecondary : DS.Color.textTertiary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel(layer.isVisible ? "Hide layer" : "Show layer")

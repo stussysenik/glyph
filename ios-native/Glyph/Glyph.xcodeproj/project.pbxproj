@@ -43,6 +43,14 @@
 		E8F31606E6559C52FD645710 /* ExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B983BE3567B6E6EA5A5028 /* ExportSheet.swift */; };
 		EA5BDD4060CE4D3B838D53B3 /* ContrastService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1190EBA6A4BCDF8754F29FD2 /* ContrastService.swift */; };
 		F703655B4358B13A45714405 /* GlyphDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 993102EAB94F92F5FFF957C8 /* GlyphDesignSystem.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* PlayfairDisplay-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4D5E6F7A8B9C0D1E2F /* PlayfairDisplay-Bold.ttf */; };
+		B2C3D4E5F6A7B8C9D0E1F2A1 /* SpaceGrotesk-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7A8B9C0D1E2F3A /* SpaceGrotesk-Bold.ttf */; };
+		C3D4E5F6A7B8C9D0E1F2A1B2 /* ArchivoBlack-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C4D5E6F7A8B9C0D1E2F3A4B /* ArchivoBlack-Regular.ttf */; };
+		D4E5F6A7B8C9D0E1F2A1B2C3 /* Caveat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4D5E6F7A8B9C0D1E2F3A4B5C /* Caveat-Regular.ttf */; };
+		E5F6A7B8C9D0E1F2A1B2C3D4 /* DMSerifDisplay-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5E6F7A8B9C0D1E2F3A4B5C6D /* DMSerifDisplay-Regular.ttf */; };
+		53330992B2DB4D8FA1639BC1 /* CustomGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77F5B11DF8C4542B6655C3D /* CustomGuideTests.swift */; };
+		47FAE7EBF2874D7F9E6FAC5D /* UndoStackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D33853DCE804584AD94C864 /* UndoStackTests.swift */; };
+		92B22E2E207E490CA74AC877 /* RotationSnapEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A383743010F647A388F6F926 /* RotationSnapEngineTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,7 +82,7 @@
 		5E91BE95D32B3DC6F12FD899 /* BackgroundImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundImageView.swift; sourceTree = "<group>"; };
 		750A3B4D87496E4F02EA7419 /* LayerOrderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerOrderTests.swift; sourceTree = "<group>"; };
 		7AFFA44F6D4CD280849AEE7A /* AlignmentEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlignmentEngineTests.swift; sourceTree = "<group>"; };
-		7D63D8525429087E12F800F0 /* Glyph.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Glyph.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D63D8525429087E12F800F0 /* Glyph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Glyph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8840209696D74B98224D3358 /* PresetSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetSheetView.swift; sourceTree = "<group>"; };
 		91CE26D9CD8872F2B45665D9 /* TextOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextOverlayView.swift; sourceTree = "<group>"; };
 		92C64A7DD6056ABE383D8649 /* LayerPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerPanelView.swift; sourceTree = "<group>"; };
@@ -94,6 +102,14 @@
 		E6D59AF390EAD8E4384C9870 /* HapticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsService.swift; sourceTree = "<group>"; };
 		EF32F4842DCD3808B2FEA0BB /* PresetCodableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetCodableTests.swift; sourceTree = "<group>"; };
 		F0FC8C8D51FCB62B40B46D42 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		1A2B3C4D5E6F7A8B9C0D1E2F /* PlayfairDisplay-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlayfairDisplay-Bold.ttf"; sourceTree = "<group>"; };
+		2B3C4D5E6F7A8B9C0D1E2F3A /* SpaceGrotesk-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Bold.ttf"; sourceTree = "<group>"; };
+		3C4D5E6F7A8B9C0D1E2F3A4B /* ArchivoBlack-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ArchivoBlack-Regular.ttf"; sourceTree = "<group>"; };
+		4D5E6F7A8B9C0D1E2F3A4B5C /* Caveat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Caveat-Regular.ttf"; sourceTree = "<group>"; };
+		5E6F7A8B9C0D1E2F3A4B5C6D /* DMSerifDisplay-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DMSerifDisplay-Regular.ttf"; sourceTree = "<group>"; };
+		C77F5B11DF8C4542B6655C3D /* CustomGuideTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomGuideTests.swift; sourceTree = "<group>"; };
+		1D33853DCE804584AD94C864 /* UndoStackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoStackTests.swift; sourceTree = "<group>"; };
+		A383743010F647A388F6F926 /* RotationSnapEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotationSnapEngineTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -109,6 +125,7 @@
 			isa = PBXGroup;
 			children = (
 				42516F196F78AC7480FBA60D /* Sources */,
+				7A8B9C0D1E2F3A4B5C6D7E8F /* Resources */,
 				0796946EC7B0FAA8F5332023 /* Tests */,
 				EE2504723E5E0794AD59BC07 /* Products */,
 			);
@@ -217,8 +234,31 @@
 				750A3B4D87496E4F02EA7419 /* LayerOrderTests.swift */,
 				EF32F4842DCD3808B2FEA0BB /* PresetCodableTests.swift */,
 				51747244A8400079B2DEDC05 /* SnapIntegrationTests.swift */,
+				A383743010F647A388F6F926 /* RotationSnapEngineTests.swift */,
+				1D33853DCE804584AD94C864 /* UndoStackTests.swift */,
+				C77F5B11DF8C4542B6655C3D /* CustomGuideTests.swift */,
 			);
 			path = GlyphTests;
+			sourceTree = "<group>";
+		};
+		6F7A8B9C0D1E2F3A4B5C6D7E /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				3C4D5E6F7A8B9C0D1E2F3A4B /* ArchivoBlack-Regular.ttf */,
+				4D5E6F7A8B9C0D1E2F3A4B5C /* Caveat-Regular.ttf */,
+				5E6F7A8B9C0D1E2F3A4B5C6D /* DMSerifDisplay-Regular.ttf */,
+				1A2B3C4D5E6F7A8B9C0D1E2F /* PlayfairDisplay-Bold.ttf */,
+				2B3C4D5E6F7A8B9C0D1E2F3A /* SpaceGrotesk-Bold.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		7A8B9C0D1E2F3A4B5C6D7E8F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6F7A8B9C0D1E2F3A4B5C6D7E /* Fonts */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -246,6 +286,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2A20A7C8BD9C10D484F7817D /* Build configuration list for PBXNativeTarget "Glyph" */;
 			buildPhases = (
+				8B9C0D1E2F3A4B5C6D7E8F9A /* Resources */,
 				4622FAF7E6A0B93283B9720D /* Sources */,
 			);
 			buildRules = (
@@ -272,7 +313,6 @@
 						ProvisioningStyle = Automatic;
 					};
 					F54BF7F17AC0A13BBE1E0C12 = {
-						DevelopmentTeam = Q7M42X7722;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -296,6 +336,21 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8B9C0D1E2F3A4B5C6D7E8F9A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3D4E5F6A7B8C9D0E1F2A1B2 /* ArchivoBlack-Regular.ttf in Resources */,
+				D4E5F6A7B8C9D0E1F2A1B2C3 /* Caveat-Regular.ttf in Resources */,
+				E5F6A7B8C9D0E1F2A1B2C3D4 /* DMSerifDisplay-Regular.ttf in Resources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* PlayfairDisplay-Bold.ttf in Resources */,
+				B2C3D4E5F6A7B8C9D0E1F2A1 /* SpaceGrotesk-Bold.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4622FAF7E6A0B93283B9720D /* Sources */ = {
@@ -345,6 +400,9 @@
 				3FDD3F738A69054631A83B6A /* LayerOrderTests.swift in Sources */,
 				9F9FDDB21923F4C30CFAD742 /* PresetCodableTests.swift in Sources */,
 				B132FFB98428E9A2FBF134A7 /* SnapIntegrationTests.swift in Sources */,
+				53330992B2DB4D8FA1639BC1 /* CustomGuideTests.swift in Sources */,
+				47FAE7EBF2874D7F9E6FAC5D /* UndoStackTests.swift in Sources */,
+				92B22E2E207E490CA74AC877 /* RotationSnapEngineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,7 +458,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = Q7M42X7722;
+				DEVELOPMENT_TEAM = 95MF6RX2GK;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -419,7 +477,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = Q7M42X7722;
+				DEVELOPMENT_TEAM = 95MF6RX2GK;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

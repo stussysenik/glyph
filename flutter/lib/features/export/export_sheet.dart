@@ -1,88 +1,144 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/export_engine.dart';
 import '../../shared/theme/app_theme.dart';
+import '../accessibility/accessibility_utils.dart';
+import '../export/export_preview.dart';
 
 /// Bottom sheet with export options: Instagram Stories, Save, Copy.
-class ExportSheet extends StatefulWidget {
+/// Updated with accessibility and gesture support.
+class ExportSheet extends ConsumerStatefulWidget {
   final GlobalKey repaintKey;
 
   const ExportSheet({super.key, required this.repaintKey});
 
   @override
-  State<ExportSheet> createState() => _ExportSheetState();
+  ConsumerState<ExportSheet> createState() => _ExportSheetState();
 }
 
-class _ExportSheetState extends State<ExportSheet> {
+class _ExportSheetState extends ConsumerState<ExportSheet> {
   bool _isExporting = false;
+  final _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus) {
+      AccessibilityUtils.announceToScreenReader(
+        'Export options',
+        hint: 'Share to Instagram Stories, Save to Photos, or Copy',
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
-      decoration: const BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle bar
-          Container(
-            width: 36,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppTheme.textSecondary.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
+    return Semantics(
+      label: 'Export Sticker',
+      hint: 'Share to Instagram Stories, Save to Photos, or Copy',
+      child: Focus(
+        focusNode: _focusNode,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
+          decoration: const BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'Export Sticker',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              AccessibilityUtils.accessibleButton(
+                onPressed: () => Navigator.pop(context),
+                label: 'Close export sheet',
+                hint: 'Close export options',
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppTheme.textSecondary.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Title
+              Semantics(
+                label: 'Export Sticker',
+                child: const Text(
+                  'Export Sticker',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Export preview
+              const ExportPreview(repaintKey: repaintKey),
+              const SizedBox(height: 20),
+              // Export options
+              _buildExportOption(
+                icon: Icons.camera_alt_rounded,
+                label: 'Share to Instagram Stories',
+                subtitle: 'Opens Instagram with your sticker',
+                isPrimary: true,
+                onTap: _shareToInstagram,
+                accessibilityLabel: 'Share to Instagram Stories',
+                accessibilityHint: 'Opens Instagram with your sticker',
+              ),
+              const SizedBox(height: 10),
+              _buildExportOption(
+                icon: Icons.photo_library_outlined,
+                label: 'Save to Photos',
+                subtitle: 'Transparent PNG to your camera roll',
+                onTap: _saveToPhotos,
+                accessibilityLabel: 'Save to Photos',
+                accessibilityHint: 'Save transparent PNG to your camera roll',
+              ),
+              const SizedBox(height: 10),
+              _buildExportOption(
+                icon: Icons.copy_rounded,
+                label: 'Copy Image',
+                subtitle: 'Copy sticker to clipboard',
+                onTap: _copyToClipboard,
+                accessibilityLabel: 'Copy Image',
+                accessibilityHint: 'Copy sticker to clipboard',
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          // Instagram Stories — primary action
-          _exportOption(
-            icon: Icons.camera_alt_rounded,
-            label: 'Share to Instagram Stories',
-            subtitle: 'Opens Instagram with your sticker',
-            isPrimary: true,
-            onTap: _shareToInstagram,
-          ),
-          const SizedBox(height: 10),
-          _exportOption(
-            icon: Icons.photo_library_outlined,
-            label: 'Save to Photos',
-            subtitle: 'Transparent PNG to your camera roll',
-            onTap: _saveToPhotos,
-          ),
-          const SizedBox(height: 10),
-          _exportOption(
-            icon: Icons.copy_rounded,
-            label: 'Copy Image',
-            subtitle: 'Copy sticker to clipboard',
-            onTap: _copyToClipboard,
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _exportOption({
+  Widget _buildExportOption({
     required IconData icon,
     required String label,
     required String subtitle,
     required VoidCallback onTap,
+    required String accessibilityLabel,
+    required String accessibilityHint,
     bool isPrimary = false,
   }) {
-    return GestureDetector(
-      onTap: _isExporting ? null : onTap,
+    return AccessibilityUtils.accessibleButton(
+      onPressed: _isExporting ? null : onTap,
+      label: accessibilityLabel,
+      hint: accessibilityHint,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -102,8 +158,7 @@ class _ExportSheetState extends State<ExportSheet> {
                     label,
                     style: TextStyle(
                       fontSize: 15,
-                      fontWeight:
-                          isPrimary ? FontWeight.w600 : FontWeight.w500,
+                      fontWeight: isPrimary ? FontWeight.w600 : FontWeight.w500,
                       color: Colors.white,
                     ),
                   ),
@@ -160,6 +215,7 @@ class _ExportSheetState extends State<ExportSheet> {
       setState(() => _isExporting = false);
       if (success) {
         HapticFeedback.mediumImpact();
+        AccessibilityUtils.announceSuccess('Shared to Instagram Stories');
         Navigator.pop(context);
       } else {
         _showError(
@@ -180,6 +236,7 @@ class _ExportSheetState extends State<ExportSheet> {
       Navigator.pop(context);
       if (success) {
         HapticFeedback.mediumImpact();
+        AccessibilityUtils.announceSuccess('Saved to Photos');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Saved to Photos!'),
@@ -203,6 +260,7 @@ class _ExportSheetState extends State<ExportSheet> {
       setState(() => _isExporting = false);
       Navigator.pop(context);
       HapticFeedback.mediumImpact();
+      AccessibilityUtils.announceSuccess('Copied to clipboard');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Copied!'),
@@ -215,6 +273,7 @@ class _ExportSheetState extends State<ExportSheet> {
 
   void _showError(String message) {
     if (!mounted) return;
+    AccessibilityUtils.announceError(message);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),

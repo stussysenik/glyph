@@ -5,7 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/canvas_state.dart';
 import '../../core/font_manager.dart';
+import '../../core/gestures/rotation_snap_engine.dart';
+import '../../core/undo_redo.dart';
+import '../../core/guides.dart';
 import '../../shared/theme/app_theme.dart';
+import '../accessibility/accessibility_utils.dart';
 import '../export/export_sheet.dart';
 import '../fonts/font_picker_sheet.dart';
 import 'style_controls.dart';
@@ -22,12 +26,22 @@ class _CanvasScreenState extends ConsumerState<CanvasScreen> {
   final _repaintKey = GlobalKey();
   final _textController = TextEditingController();
   final _focusNode = FocusNode();
+  final _canvasFocusNode = FocusNode();
   bool _isEditing = false;
+  double _currentRotation = 0.0;
+  bool _showRotationBadge = false;
+  Timer? _autoHideTimer;
 
   @override
   void initState() {
     super.initState();
     _textController.addListener(_onTextChanged);
+    _focusNode.addListener(_onFocusChange);
+    _canvasFocusNode.addListener(_onCanvasFocusChange);
+
+    // Register keyboard shortcuts
+    UndoRedoManager.registerShortcuts();
+
     // Auto-select first bundled font on startup
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final fonts = ref.read(fontListProvider);
@@ -41,12 +55,100 @@ class _CanvasScreenState extends ConsumerState<CanvasScreen> {
   void dispose() {
     _textController.removeListener(_onTextChanged);
     _textController.dispose();
+    _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
+    _canvasFocusNode.removeListener(_onCanvasFocusChange);
+    _canvasFocusNode.dispose();
+    _autoHideTimer?.cancel();
     super.dispose();
   }
 
   void _onTextChanged() {
     ref.read(canvasProvider.notifier).setText(_textController.text);
+  }
+
+  void _onFocusChange() {
+    if (_focusNode.hasFocus) {
+      setState(() => _isEditing = true);
+      AccessibilityUtils.announceToScreenReader(
+        'Text editing mode',
+        hint: 'Type your story text',
+      );
+    } else {
+      setState(() => _isEditing = false);
+    }
+  }
+
+  void _onCanvasFocusChange() {
+    if (_canvasFocusNode.hasFocus) {
+      AccessibilityUtils.announceToScreenReader(
+        'Canvas area',
+        hint: 'Tap to edit text or use gestures',
+      );
+    }
+  }
+
+  void _handleDoubleTap() {
+    if (!_isEditing) {
+      _focusNode.requestFocus();
+      setState(() => _isEditing = true);
+      AccessibilityUtils.announceToScreenReader(
+        'Double tapped to edit text',
+        hint: 'Text editing mode',
+      );
+    } else {
+      // Double tap to snap rotation
+      final canvas = ref.read(canvasProvider);
+      if (canvas.rotation != 0.0) {
+        ref.read(canvasProvider.notifier).setRotation(
+          RotationSnapEngine.snapAngle(canvas.rotation)
+        );
+        RotationSnapEngine.provideHapticFeedback();
+        AccessibilityUtils.announceToScreenReader(
+          'Rotation snapped to cardinal angle',
+          hint: 'Rotation set to ${RotationSnapEngine.getDegreeBadge(canvas.rotation)}',
+        );
+      }
+    }
+  }
+
+  void _handleRotationGesture(double rotationDelta) {
+    final newRotation = _currentRotation + rotationDelta;
+    setState(() => _currentRotation = newRotation);
+    ref.read(canvasProvider.notifier).setRotation(newRotation);
+
+    // Show rotation badge
+    setState(() => _showRotationBadge = true);
+    _autoHideTimer?.cancel();
+    _autoHideTimer = Timer(const Duration(milliseconds: 500), () {
+      setState(() => _showRotationBadge = false);
+    });
+
+    // Provide haptic feedback for rotation
+    if (RotationSnapEngine.shouldSnap(_currentRotation, newRotation)) {
+      RotationSnapEngine.provideHapticFeedback();
+    }
+  }
+
+  void _handleUndo() {
+    ref.read(canvasProvider.notifier).undo();
+    AccessibilityUtils.announceToScreenReader(
+      'Undo action performed',
+      hint: 'Reverted to previous state',
+    );
+  }
+
+  void _handleRedo() {
+    ref.read(canvasProvider.notifier).redo();
+    AccessibilityUtils.announceToScreenReader(
+      'Redo action performed',
+      hint: 'Restored previous state',
+    );
+  }
+
+  void _handleShakeGesture() {
+    // Simulate shake-to-undo
+    _handleUndo();
   }
 
   @override
@@ -58,40 +160,84 @@ class _CanvasScreenState extends ConsumerState<CanvasScreen> {
       backgroundColor: AppTheme.background,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Stack(
-          children: [
-            // Main content
-            Column(
+        child: Focus(
+          focusNode: _canvasFocusNode,
+          child: GestureDetector(
+            onTap: () {
+              if (_isEditing) {
+                _focusNode.unfocus();
+                setState(() => _isEditing = false);
+              } else {
+                _focusNode.requestFocus();
+                setState(() => _isEditing = true);
+              }
+            },
+            onDoubleTap: _handleDoubleTap,
+            onLongPress: () {
+              AccessibilityUtils.announceToScreenReader(
+                'Long press detected',
+                hint: 'Context menu available',
+              );
+            },
+            child: Stack(
               children: [
-                _buildTopBar(canvas),
-                Expanded(child: _buildCanvas(canvas)),
-                // Push controls above keyboard
-                AnimatedPadding(
-                  duration: const Duration(milliseconds: 200),
-                  padding: EdgeInsets.only(
-                    bottom: bottomInset > 0 ? bottomInset : 0,
-                  ),
-                  child: const StyleControls(),
+                // Main content
+                Column(
+                  children: [
+                    _buildTopBar(canvas),
+                    Expanded(child: _buildCanvas(canvas)),
+                    // Push controls above keyboard
+                    AnimatedPadding(
+                      duration: const Duration(milliseconds: 200),
+                      padding: EdgeInsets.only(
+                        bottom: bottomInset > 0 ? bottomInset : 0,
+                      ),
+                      child: const StyleControls(),
+                    ),
+                    if (bottomInset == 0) const SizedBox(height: 16),
+                  ],
                 ),
-                if (bottomInset == 0) const SizedBox(height: 16),
+                // Hidden text field — we use this for keyboard input
+                Positioned(
+                  left: -1000,
+                  child: SizedBox(
+                    width: 1,
+                    height: 1,
+                    child: AccessibilityUtils.accessibleTextField(
+                      controller: _textController,
+                      label: 'Story Text',
+                      hint: 'Type your Instagram story text',
+                      focusNode: _focusNode,
+                      onChanged: _onTextChanged,
+                    ),
+                  ),
+                ),
+                // Rotation badge
+                if (_showRotationBadge)
+                  Positioned(
+                    top: 80,
+                    left: MediaQuery.of(context).size.width / 2 - 30,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.accent,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        RotationSnapEngine.getDegreeBadge(_currentRotation),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
-            // Hidden text field — we use this for keyboard input
-            Positioned(
-              left: -1000,
-              child: SizedBox(
-                width: 1,
-                height: 1,
-                child: TextField(
-                  controller: _textController,
-                  focusNode: _focusNode,
-                  maxLines: null,
-                  autofocus: false,
-                  decoration: const InputDecoration(border: InputBorder.none),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -102,9 +248,11 @@ class _CanvasScreenState extends ConsumerState<CanvasScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          // Font picker button
-          GestureDetector(
-            onTap: _showFontPicker,
+          // Font picker button with accessibility support
+          AccessibilityUtils.accessibleButton(
+            onPressed: _showFontPicker,
+            label: 'Font Picker',
+            hint: 'Open font selection menu',
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
@@ -130,9 +278,51 @@ class _CanvasScreenState extends ConsumerState<CanvasScreen> {
             ),
           ),
           const Spacer(),
-          // Export button
-          GestureDetector(
-            onTap: canvas.text.isEmpty ? null : _showExportSheet,
+          // Undo button
+          if (ref.read(canvasProvider.notifier).canUndo())
+            AccessibilityUtils.accessibleButton(
+              onPressed: _handleUndo,
+              label: 'Undo',
+              hint: 'Undo last action',
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.undo,
+                  size: 18,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+            ),
+          // Redo button
+          if (ref.read(canvasProvider.notifier).canRedo())
+            AccessibilityUtils.accessibleButton(
+              onPressed: _handleRedo,
+              label: 'Redo',
+              hint: 'Redo last action',
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.redo,
+                  size: 18,
+                  color: AppTheme.textPrimary,
+                ),
+              ),
+            ),
+          // Export button with accessibility support
+          AccessibilityUtils.accessibleButton(
+            onPressed: canvas.text.isEmpty ? null : _showExportSheet,
+            label: 'Export Button',
+            hint: canvas.text.isEmpty
+                ? 'Add text to enable export'
+                : 'Share to Instagram Stories',
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -175,8 +365,8 @@ class _CanvasScreenState extends ConsumerState<CanvasScreen> {
   Widget _buildCanvas(CanvasModel canvas) {
     final hasText = canvas.text.isNotEmpty;
 
-    return GestureDetector(
-      onTap: () {
+    return AccessibilityUtils.accessibleButton(
+      onPressed: () {
         if (_isEditing) {
           _focusNode.unfocus();
           setState(() => _isEditing = false);
@@ -185,6 +375,8 @@ class _CanvasScreenState extends ConsumerState<CanvasScreen> {
           setState(() => _isEditing = true);
         }
       },
+      label: 'Canvas Area',
+      hint: 'Tap to edit text or use gestures',
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -253,6 +445,10 @@ class _CanvasScreenState extends ConsumerState<CanvasScreen> {
   void _showFontPicker() {
     _focusNode.unfocus();
     setState(() => _isEditing = false);
+    AccessibilityUtils.announceToScreenReader(
+      'Opening font picker',
+      hint: 'Select a font for your story',
+    );
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -265,6 +461,10 @@ class _CanvasScreenState extends ConsumerState<CanvasScreen> {
     _focusNode.unfocus();
     setState(() => _isEditing = false);
     HapticFeedback.mediumImpact();
+    AccessibilityUtils.announceToScreenReader(
+      'Opening export options',
+      hint: 'Share to Instagram Stories or save to photos',
+    );
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,

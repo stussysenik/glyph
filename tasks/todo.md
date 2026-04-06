@@ -52,6 +52,20 @@
 - [ ] Progressive onboarding hints (3 hints)
 - [ ] Error state handling for permissions
 - [ ] TestFlight beta build
+- [ ] P1 perf: cache sortedLayers (see openspec/PERF-001)
+- [ ] P1 perf: reduce AlignmentEngine per-frame allocations
+- [ ] P2 perf: off-main-thread export rendering
+- [ ] P2 perf: fix InstagramSharer saveToPhotos 500ms fake delay
+
+## Recently Completed
+- [x] **Fix font crash** — removed `Fonts/` prefix from Info.plist UIAppFonts (group, not folder reference)
+- [x] **Fix corrupt font** — PlayfairDisplay-Bold.ttf was HTML, re-downloaded from Google Fonts CDN
+- [x] **Phosphor app icon** — DM Serif Display "G" with text cursor on charcoal background
+- [x] **P0 perf: async font registration** — moved registerCustomFonts to Task.detached
+- [x] **P0 perf: cache export render** — render once, reuse across all export actions
+- [x] **Background constraints** — clamp pan/scale so background never reveals empty space
+- [x] **Accent color picker** — 8 preset colors in Settings, reads from UserDefaults globally
+- [x] **OpenSpec PERF-001** — full performance proposal with 7 fixes across 3 priority tiers
 
 ## Deferred (v1.5+)
 - [ ] Text effects: stroke, shadow, gradient
@@ -59,4 +73,4 @@
 - [ ] Background color/gradient export
 - [ ] Video export (animated text reveal)
 - [ ] Android platform support
-- [ ] Phosphor icons (replace SF Symbols)
+- [ ] Phosphor icons (replace SF Symbols throughout UI)

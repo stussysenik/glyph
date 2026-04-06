@@ -11,7 +11,18 @@ final class FontLibraryViewModel {
 
     init() {
         fonts = FontEntry.bundled + loadCustomFonts()
-        registerCustomFonts()
+        // Register custom fonts off the main thread to avoid blocking cold start.
+        // Bundled fonts are registered by iOS via Info.plist UIAppFonts before app code runs.
+        let customEntries = fonts.filter { !$0.isBundled }
+        Task.detached(priority: .userInitiated) {
+            for entry in customEntries {
+                guard let path = entry.filePath else { continue }
+                let url = URL(fileURLWithPath: path)
+                if FileManager.default.fileExists(atPath: path) {
+                    _ = FontLoader.register(url: url)
+                }
+            }
+        }
     }
 
     /// All bundled fonts.
@@ -97,16 +108,6 @@ final class FontLibraryViewModel {
             return []
         }
         return entries
-    }
-
-    private func registerCustomFonts() {
-        for entry in fonts where !entry.isBundled {
-            guard let path = entry.filePath else { continue }
-            let url = URL(fileURLWithPath: path)
-            if FileManager.default.fileExists(atPath: path) {
-                _ = FontLoader.register(url: url)
-            }
-        }
     }
 
     private func fontsDirectory() -> URL {
