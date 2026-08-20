@@ -114,6 +114,41 @@ struct StyleControlsView: View {
                     )
                 }
 
+                // MARK: - Style chips
+                VStack(alignment: .leading, spacing: DS.Spacing.sm) {
+                    Text("STYLE")
+                        .font(DS.Typography.label)
+                        .tracking(1.5)
+                        .foregroundStyle(DS.Color.textTertiary)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: DS.Spacing.sm) {
+                            ForEach(TextStyle.allCases) { style in
+                                let isActive = overlay.effects == style.effects
+                                Button {
+                                    canvas.applyTextStyle(id: overlay.id, style: style)
+                                    haptics.selectionChanged()
+                                } label: {
+                                    Text(style.label)
+                                        .font(.subheadline.weight(.medium))
+                                        .foregroundStyle(isActive ? DS.Color.accent : DS.Color.textSecondary)
+                                        .padding(.horizontal, DS.Spacing.md)
+                                        .frame(height: 40)
+                                        .background(
+                                            isActive ? DS.Color.accent.opacity(0.15) : DS.Color.surfaceAlt,
+                                            in: RoundedRectangle(cornerRadius: DS.Radius.sm)
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: DS.Radius.sm)
+                                                .stroke(isActive ? DS.Color.accent : SwiftUI.Color.clear, lineWidth: 1)
+                                        )
+                                }
+                                .accessibilityLabel("\(style.label) text style")
+                                .accessibilityAddTraits(isActive ? [.isSelected, .isButton] : [.isButton])
+                            }
+                        }
+                    }
+                }
+
                 // MARK: - Presets button
                 Button { showPresets = true } label: {
                     Text("PRESETS")

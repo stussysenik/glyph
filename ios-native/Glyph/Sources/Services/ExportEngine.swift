@@ -86,16 +86,23 @@ enum ExportEngine {
 
         let font = FontLoader.uiFont(family: layer.fontFamily, size: layer.fontSize)
         let uiColor = UIColor(layer.textColor)
+        let fx = layer.effects
 
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = nsAlignment(from: layer.alignment)
 
-        let attributes: [NSAttributedString.Key: Any] = [
+        var attributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: uiColor,
             .paragraphStyle: paragraphStyle,
             .kern: layer.letterSpacing,
         ]
+        // Outline: negative strokeWidth fills AND strokes. The attribute is a
+        // percentage of font point size, so convert from the layer's points.
+        if fx.strokeWidth > 0 {
+            attributes[.strokeColor] = UIColor(fx.strokeColor)
+            attributes[.strokeWidth] = -(fx.strokeWidth / layer.fontSize * 100)
+        }
 
         let attrString = NSAttributedString(string: layer.text, attributes: attributes)
         let textSize = attrString.boundingRect(
@@ -110,7 +117,26 @@ enum ExportEngine {
             width: textSize.width,
             height: textSize.height
         )
+
+        // Highlight box — drawn behind the text, before any shadow is set.
+        if let highlight = fx.highlightColor {
+            let box = drawRect.insetBy(dx: -fx.highlightPadding.width, dy: -fx.highlightPadding.height)
+            let path = UIBezierPath(roundedRect: box, cornerRadius: fx.highlightCornerRadius)
+            UIColor(highlight).setFill()
+            path.fill()
+        }
+
+        // Shadow / glow — applies only to the text fill, so scope it.
+        ctx.saveGState()
+        if fx.shadowRadius > 0 {
+            ctx.setShadow(
+                offset: fx.shadowOffset,
+                blur: fx.shadowRadius,
+                color: UIColor(fx.shadowColor).withAlphaComponent(fx.shadowOpacity).cgColor
+            )
+        }
         attrString.draw(in: drawRect)
+        ctx.restoreGState()
 
         ctx.restoreGState()
     }

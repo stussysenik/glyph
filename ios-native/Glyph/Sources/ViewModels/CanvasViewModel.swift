@@ -198,6 +198,8 @@ final class CanvasViewModel {
     func updateColor(id: UUID, color: Color)                   { updateLayer(id: id) { (l: inout TextLayer) in l.textColor = color } }
     func updateAlignment(id: UUID, alignment: TextAlignment)   { updateLayer(id: id) { (l: inout TextLayer) in l.alignment = alignment } }
     func updateLetterSpacing(id: UUID, spacing: CGFloat)       { updateLayer(id: id) { (l: inout TextLayer) in l.letterSpacing = spacing } }
+    func updateEffects(id: UUID, effects: TextEffects)         { updateLayer(id: id) { (l: inout TextLayer) in l.effects = effects } }
+    func applyTextStyle(id: UUID, style: TextStyle)            { updateLayer(id: id) { (l: inout TextLayer) in l.effects = style.effects } }
 
     // MARK: - Transform
 

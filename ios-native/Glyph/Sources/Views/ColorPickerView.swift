@@ -1,6 +1,3 @@
-instagram-story-builder/ios-native/Glyph/Sources/Views/ColorPickerView.swift
-```
-```swift
 import SwiftUI
 import UIKit
 

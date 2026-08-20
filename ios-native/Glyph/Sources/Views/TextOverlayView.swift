@@ -23,11 +23,7 @@ struct TextOverlayView: View {
     @State private var badgeWorkItem: DispatchWorkItem?
 
     var body: some View {
-        Text(layer.text.isEmpty ? " " : layer.text)
-            .font(.custom(layer.fontFamily, size: layer.fontSize))
-            .foregroundStyle(layer.textColor)
-            .multilineTextAlignment(layer.alignment)
-            .tracking(layer.letterSpacing)
+        renderedText
             .padding(.horizontal, DS.Spacing.sm)
             .scaleEffect(layer.scale * gestureScale)
             .rotationEffect(layer.rotation + gestureRotation)
@@ -48,6 +44,53 @@ struct TextOverlayView: View {
             .accessibilityAddTraits(isSelected ? [.isSelected, .isButton] : [.isButton])
             .accessibilityValue(layer.isLocked ? "Locked" : "")
             .accessibilityActions { accessibilityActions }
+    }
+
+    // MARK: - Styled Text (WYSIWYG with ExportEngine)
+
+    /// Unit offsets for the live outline approximation (8 compass directions).
+    private static let outlineOffsets: [CGSize] = [
+        CGSize(width: -1, height: 0), CGSize(width: 1, height: 0),
+        CGSize(width: 0, height: -1), CGSize(width: 0, height: 1),
+        CGSize(width: -1, height: -1), CGSize(width: 1, height: -1),
+        CGSize(width: -1, height: 1), CGSize(width: 1, height: 1),
+    ]
+
+    @ViewBuilder
+    private var renderedText: some View {
+        let fx = layer.effects
+        let base = Text(layer.text.isEmpty ? " " : layer.text)
+            .font(.custom(layer.fontFamily, size: layer.fontSize))
+            .multilineTextAlignment(layer.alignment)
+            .tracking(layer.letterSpacing)
+
+        ZStack {
+            // Outline: stack stroke-colored copies behind the fill. SwiftUI Text
+            // has no native stroke, so this approximates ExportEngine's outline.
+            if fx.strokeWidth > 0 {
+                ForEach(Self.outlineOffsets.indices, id: \.self) { i in
+                    let unit = Self.outlineOffsets[i]
+                    base
+                        .foregroundStyle(fx.strokeColor)
+                        .offset(x: unit.width * fx.strokeWidth, y: unit.height * fx.strokeWidth)
+                }
+            }
+            base.foregroundStyle(layer.textColor)
+        }
+        .shadow(
+            color: fx.shadowRadius > 0 ? fx.shadowColor.opacity(fx.shadowOpacity) : .clear,
+            radius: fx.shadowRadius,
+            x: fx.shadowOffset.width,
+            y: fx.shadowOffset.height
+        )
+        .padding(.horizontal, fx.highlightColor != nil ? fx.highlightPadding.width : 0)
+        .padding(.vertical, fx.highlightColor != nil ? fx.highlightPadding.height : 0)
+        .background {
+            if let highlight = fx.highlightColor {
+                RoundedRectangle(cornerRadius: fx.highlightCornerRadius)
+                    .fill(highlight)
+            }
+        }
     }
 
     // MARK: - Double Tap
